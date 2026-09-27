@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
 <title>NCT 2026 Setlist 选择器</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -12,326 +13,831 @@
     --neon-glow: rgba(204, 255, 0, 0.25);
     --bg: #0a0a0a;
     --panel: #141414;
-    --panel-hover: #1e1e1e;
     --border: #2a2a2a;
     --text: #ffffff;
     --muted: #888888;
   }
-  html, body { height: 100%; }
-  body {
-    margin: 0; color: var(--text); background: var(--bg);
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    color: var(--text); background: var(--bg);
     font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
+  }
+
+  /* ==================================================
+     移动端布局（默认显示，桌面用媒体查询隐藏）
+     ================================================== */
+  .mobile-ui {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* --- 顶栏 --- */
+  .m-header {
+    flex: none;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+    border-bottom: 1px solid #1a1a1a;
+    background: #0a0a0a;
+  }
+  .m-logo {
+    width: 32px; height: 32px; flex: none;
+    display: grid; place-items: center;
+    background: var(--neon); color: #000;
+    font-weight: 900; font-size: 15px;
+    border-radius: 6px;
+    box-shadow: 0 0 14px var(--neon-glow);
+  }
+  .m-title {
+    flex: 1;
+    font-size: 14px; font-weight: 800;
+    letter-spacing: 0.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .m-title span { color: var(--neon); }
+  .m-icon-btn {
+    width: 34px; height: 34px; flex: none;
+    background: #000; color: #ccc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-size: 15px; font-weight: 800;
+    cursor: pointer; padding: 0;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .m-icon-btn:active {
+    border-color: var(--neon); color: var(--neon);
+  }
+  .m-icon-btn.primary {
+    background: var(--neon); border-color: var(--neon); color: #000;
+  }
+
+  /* --- 预览区 --- */
+  .m-preview {
+    flex: none;
+    height: 30vh;
+    min-height: 140px;
+    max-height: 260px;
+    border-bottom: 1px solid #1a1a1a;
+    background: #0d0d0d;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 10px;
+  }
+  .m-preview::-webkit-scrollbar { width: 4px; }
+  .m-preview::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .m-preview-empty {
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px;
+    color: #555; font-size: 12px;
+    text-align: center; line-height: 1.6;
+  }
+  .m-preview-empty strong { color: var(--neon); font-weight: 800; font-size: 13px; }
+
+  .m-pv-song {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all .15s;
+    background: #141414;
+  }
+  .m-pv-song.active {
+    border-color: var(--neon);
+    background: rgba(204, 255, 0, 0.06);
+    box-shadow: 0 0 12px var(--neon-glow);
+  }
+  .m-pv-thumb {
+    width: 32px; height: 32px; flex: none;
+    border-radius: 5px;
+    background: #222;
+    display: grid; place-items: center;
+    overflow: hidden;
+    font-size: 13px; color: #444;
+    border: 1px solid #2a2a2a;
+  }
+  .m-pv-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .m-pv-body { flex: 1; min-width: 0; }
+  .m-pv-name {
+    font-size: 12.5px; font-weight: 700;
+    color: #ddd; line-height: 1.3;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .m-pv-song.active .m-pv-name { color: var(--neon); }
+
+  .m-pv-members {
+    display: flex; gap: 3px; margin-top: 4px;
+    align-items: center;
+    overflow: hidden;
+  }
+  .m-pv-avatar {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #222; color: var(--neon);
+    font-size: 9px; font-weight: 800;
+    display: grid; place-items: center;
+    overflow: hidden; flex: none;
+    border: 1px solid #333;
+  }
+  .m-pv-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .m-pv-more {
+    font-size: 9px; color: #666;
+    margin-left: 2px;
+    font-weight: 700;
+  }
+  .m-pv-none {
+    font-size: 10px; color: #444;
+    margin-top: 3px;
+  }
+  .m-pv-count {
+    flex: none;
+    font-size: 10px; font-weight: 800;
+    color: #000;
+    background: var(--neon);
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+
+  /* --- 标签栏 --- */
+  .m-tabs {
+    flex: none;
+    display: flex;
+    padding: 8px 12px 0;
+    gap: 6px;
+    background: #0a0a0a;
+  }
+  .m-tab {
+    flex: 1;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    background: #000;
+    color: #888;
+    font-size: 12px; font-weight: 800;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .m-tab.active {
+    background: var(--neon);
+    border-color: var(--neon);
+    color: #000;
+    box-shadow: 0 0 12px var(--neon-glow);
+  }
+
+  /* --- 搜索 / 筛选 --- */
+  .m-controls {
+    flex: none;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #0a0a0a;
+  }
+  .m-search-wrap { position: relative; }
+  .m-search {
+    width: 100%;
+    padding: 9px 12px 9px 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #000;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .m-search::placeholder { color: #555; }
+  .m-search:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 10px var(--neon-glow);
+  }
+  .m-search-icon {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: #555; font-size: 13px;
+    pointer-events: none;
+  }
+
+  .m-filters {
+    display: flex; gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .m-filters::-webkit-scrollbar { display: none; }
+  .m-filter {
+    flex: none;
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: #888;
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .m-filter.active {
+    background: var(--neon);
+    border-color: var(--neon);
+    color: #000;
+  }
+
+  /* --- 列表 --- */
+  .m-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 12px 20px;
+  }
+  .m-list::-webkit-scrollbar { width: 4px; }
+  .m-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .m-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: #0e0e0e;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .m-item:active { background: #181818; }
+  .m-item.selected {
+    border-color: var(--neon-dim);
+    background: rgba(204, 255, 0, 0.06);
+  }
+  .m-item.in-current {
+    border-color: var(--neon);
+    background: rgba(204, 255, 0, 0.12);
+  }
+  .m-item-thumb {
+    width: 40px; height: 40px; flex: none;
+    border-radius: 7px;
+    background: #000;
+    border: 1px solid #2a2a2a;
+    display: grid; place-items: center;
+    overflow: hidden;
+    font-size: 14px; color: #555;
+  }
+  .m-item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .m-item-body { flex: 1; min-width: 0; }
+  .m-item-name {
+    font-size: 13px; font-weight: 700;
+    color: #ddd; line-height: 1.3;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .m-item.selected .m-item-name,
+  .m-item.in-current .m-item-name { color: var(--neon); }
+  .m-item-tags {
+    display: flex; gap: 3px; margin-top: 3px;
+    align-items: center;
+  }
+  .m-tag {
+    font-size: 8.5px; font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #333;
+    color: #888;
     letter-spacing: 0.5px;
   }
+  .m-tag.t-127 { border-color: #3366ff; color: #6699ff; }
+  .m-tag.t-dream { border-color: #00ccff; color: #33ddff; }
+  .m-tag.t-wayv { border-color: #ffaa00; color: #ffcc33; }
+  .m-tag.t-wish { border-color: #ff66cc; color: #ff99dd; }
 
-  .hero {
-    width: 100%;
+  .m-item-badge {
+    flex: none;
+    min-width: 22px; height: 22px;
+    padding: 0 6px;
+    background: var(--neon);
+    color: #000;
+    font-size: 10px; font-weight: 900;
+    border-radius: 5px;
+    display: grid; place-items: center;
+  }
+  .m-item-state {
+    flex: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid #333;
     background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 1px solid #222;
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 800;
+    color: transparent;
+  }
+  .m-item.in-current .m-item-state {
+    background: var(--neon); border-color: var(--neon);
+    color: #000;
+  }
+
+  .m-empty {
     padding: 40px 20px;
+    text-align: center;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.7;
   }
-  .hero img {
-    max-width: 800px;
+
+  /* ==================================================
+     桌面端布局
+     ================================================== */
+  .desktop-ui { display: none; }
+
+  @media (min-width: 820px) {
+    .mobile-ui { display: none; }
+    .desktop-ui {
+      display: block;
+      height: 100%;
+      overflow-y: auto;
+    }
+  }
+
+  /* 桌面端样式（沿用之前的） */
+  .d-hero {
+    background: #000;
+    display: flex; justify-content: center; align-items: center;
+    border-bottom: 1px solid #222;
+    padding: 30px 20px;
+  }
+  .d-hero img { max-width: 700px; width: 100%; display: block; }
+  .d-app { max-width: 1520px; margin: 0 auto; padding: 22px 22px 60px; }
+
+  .d-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .d-brand { display: flex; align-items: center; gap: 12px; }
+  .d-logo {
+    width: 42px; height: 42px;
+    border-radius: 8px;
+    display: grid; place-items: center;
+    background: var(--neon); color: #000;
+    font-size: 20px; font-weight: 900;
+    box-shadow: 0 0 20px var(--neon-glow);
+  }
+  .d-brand h1 { margin: 0; font-size: 19px; font-weight: 900; }
+  .d-brand h1 span { color: var(--neon); }
+  .d-brand p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+  .d-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .d-btn {
+    border: 1px solid var(--border);
+    background: #000;
+    color: var(--text);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 12.5px; font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: 0.5px;
+  }
+  .d-btn:hover { border-color: var(--neon); color: var(--neon); }
+  .d-btn.primary {
+    background: var(--neon); border-color: var(--neon);
+    color: #000; font-weight: 800;
+    box-shadow: 0 0 14px var(--neon-glow);
+  }
+  .d-btn.primary:hover { background: #d4ff33; color: #000; }
+  .d-btn.ghost { background: transparent; border-color: var(--neon); color: var(--neon); }
+
+  .d-layout {
+    display: grid;
+    grid-template-columns: 300px 340px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .d-pool {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; flex-direction: column;
+    gap: 10px;
+    max-height: calc(100vh - 140px);
+  }
+  .d-pool-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .d-pool-head h2 {
+    margin: 0;
+    font-size: 13px; font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--neon);
+    text-transform: uppercase;
+  }
+  .d-counter {
+    font-size: 10.5px; font-weight: 800;
+    color: var(--neon);
+    background: rgba(204, 255, 0, 0.1);
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--neon-dim);
+    white-space: nowrap;
+  }
+  .d-mini {
+    padding: 4px 9px;
+    border: 1px solid var(--border);
+    background: #000;
+    color: #ccc;
+    font-size: 10.5px; font-weight: 800;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: all .15s;
+  }
+  .d-mini:hover { border-color: var(--neon); color: var(--neon); }
+  .d-mini.danger { border-color: #441111; color: #ff4444; background: #110000; }
+  .d-mini.danger:hover { border-color: #ff4444; }
+
+  .d-hint {
+    font-size: 11px; padding: 9px 11px;
+    border-radius: 8px;
+    background: rgba(204, 255, 0, 0.08);
+    border: 1px solid var(--neon-dim);
+    color: var(--neon);
+    font-weight: 700;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .d-hint.warn {
+    background: rgba(255, 200, 0, 0.1);
+    border-color: #ffcc00; color: #ffcc00;
+  }
+  .d-search {
     width: 100%;
-    height: auto;
-    display: block;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #000;
+    color: var(--text);
+    font-size: 12.5px;
+    font-family: inherit;
+    outline: none;
+  }
+  .d-search::placeholder { color: #555; }
+  .d-search:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
+
+  .d-teams { display: flex; gap: 4px; flex-wrap: wrap; }
+  .d-team {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: #888;
+    font-size: 10.5px; font-weight: 800;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all .15s;
+  }
+  .d-team:hover { border-color: var(--neon); color: var(--neon); }
+  .d-team.active {
+    background: var(--neon); border-color: var(--neon); color: #000;
   }
 
-  .app { max-width: 1520px; margin: 0 auto; padding: 26px 22px 70px; }
+  .d-list {
+    flex: 1; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 3px;
+    margin: 0 -6px; padding: 0 6px;
+  }
+  .d-list::-webkit-scrollbar { width: 5px; }
+  .d-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .logo { width: 46px; height: 46px; border-radius: 8px; display: grid; place-items: center;
-    font-size: 22px; color: #000; background: var(--neon);
-    box-shadow: 0 0 20px var(--neon-glow); flex: none; font-weight: 900; }
-  .brand h1 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1px; }
-  .brand h1 span { color: var(--neon); }
-  .brand p { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); letter-spacing: 0.5px; }
+  .d-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 9px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .d-item:hover { background: #1a1a1a; }
+  .d-item.selected { background: rgba(204, 255, 0, 0.05); border-color: var(--neon-dim); }
+  .d-item.active {
+    background: rgba(204, 255, 0, 0.1);
+    border-color: var(--neon);
+    box-shadow: 0 0 12px var(--neon-glow);
+  }
+  .d-item.in-current { background: rgba(204, 255, 0, 0.15); border-color: var(--neon); }
 
-  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn { border: 1px solid var(--border); background: #000; color: var(--text);
-    padding: 10px 18px; border-radius: 8px; font-size: 13px; font-family: inherit;
-    cursor: pointer; white-space: nowrap; transition: all .2s ease; font-weight: 600;
-    letter-spacing: 0.5px; touch-action: manipulation; }
-  .btn:hover { border-color: var(--neon); color: var(--neon); box-shadow: 0 0 12px var(--neon-glow); }
-  .btn:active { transform: translateY(1px); }
-  .btn:disabled { opacity: .6; cursor: wait; }
-  .btn.primary { background: var(--neon); border: none; color: #000; font-weight: 800;
-    box-shadow: 0 0 15px var(--neon-glow); }
-  .btn.primary:hover { background: #d4ff33; box-shadow: 0 0 25px var(--neon-glow); color: #000; }
-  .btn.ghost { background: transparent; border-color: var(--neon); color: var(--neon); }
-  .btn.ghost:hover { background: rgba(204, 255, 0, 0.1); }
+  .d-item-thumb {
+    width: 40px; height: 40px; flex: none;
+    border-radius: 6px;
+    background: #000;
+    border: 1px dashed #444;
+    display: grid; place-items: center;
+    overflow: hidden;
+    font-size: 14px; color: #555;
+    cursor: pointer;
+  }
+  .d-item-thumb.has-img { border-style: solid; border-color: #333; }
+  .d-item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .layout { display: grid; grid-template-columns: 300px 340px minmax(0,1fr); gap: 18px; align-items: start; }
+  .d-item-body { flex: 1; min-width: 0; }
+  .d-item-name {
+    font-size: 12.5px; font-weight: 600;
+    color: #ddd;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .d-item.selected .d-item-name,
+  .d-item.in-current .d-item-name { color: var(--neon); }
+  .d-item-tags { display: flex; gap: 3px; margin-top: 2px; }
+  .d-tag {
+    font-size: 8.5px; font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #333;
+    color: #888;
+    letter-spacing: 0.5px;
+  }
+  .d-tag.t-127 { border-color: #3366ff; color: #6699ff; }
+  .d-tag.t-dream { border-color: #00ccff; color: #33ddff; }
+  .d-tag.t-wayv { border-color: #ffaa00; color: #ffcc33; }
+  .d-tag.t-wish { border-color: #ff66cc; color: #ff99dd; }
 
-  .pool { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px; display: flex; flex-direction: column; gap: 12px;
-    max-height: calc(100vh - 140px); transition: border-color .3s; }
-  .pool:hover { border-color: #333; }
-  .pool-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .pool-head h2 { margin: 0; font-size: 14px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; color: var(--neon); }
-  .counter { font-size: 11px; font-weight: 800; color: var(--neon); background: rgba(204, 255, 0, 0.1);
-    padding: 4px 10px; border-radius: 4px; border: 1px solid var(--neon-dim); white-space: nowrap; letter-spacing: 0.5px; }
-  .mini-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border);
-    background: #000; color: var(--text); font-size: 11px; font-weight: 800;
-    cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; letter-spacing: 0.5px; touch-action: manipulation; }
-  .mini-btn:hover { border-color: var(--neon); color: var(--neon); }
-  .mini-btn.danger { border-color: #441111; background: #110000; color: #ff4444; }
-  .mini-btn.danger:hover { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
+  .d-badge {
+    flex: none;
+    min-width: 22px; height: 22px;
+    padding: 0 6px;
+    background: var(--neon);
+    color: #000;
+    font-size: 10px; font-weight: 900;
+    border-radius: 4px;
+    display: grid; place-items: center;
+  }
+  .d-state {
+    flex: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid #444;
+    background: #000;
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 800;
+    color: transparent;
+  }
+  .d-item.in-current .d-state {
+    background: var(--neon); border-color: var(--neon); color: #000;
+  }
+  .d-item:not(.in-current):hover .d-state {
+    border-color: var(--neon); color: var(--neon);
+  }
 
-  .active-hint { font-size: 11.5px; padding: 10px 12px; border-radius: 8px;
-    background: rgba(204, 255, 0, 0.08); border: 1px solid var(--neon-dim);
-    color: var(--neon); font-weight: 700; letter-spacing: 0.5px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .active-hint.warn { background: rgba(255, 200, 0, 0.1); border-color: #ffcc00; color: #ffcc00; }
+  .d-empty {
+    padding: 30px 12px;
+    text-align: center;
+    color: #555;
+    font-size: 12px;
+  }
 
-  .search { width: 100%; padding: 10px 12px; border: 1px solid var(--border);
-    border-radius: 8px; font-size: 13px; font-family: inherit; outline: none;
-    background: #000; color: var(--text); transition: all .2s;
-    -webkit-appearance: none; appearance: none; letter-spacing: 0.5px; }
-  .search::placeholder { color: #555; }
-  .search:focus { border-color: var(--neon); box-shadow: 0 0 10px var(--neon-glow); }
+  .d-preview { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 140px); overflow-y: auto; }
+  .d-preview::-webkit-scrollbar { width: 5px; }
+  .d-preview::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-  .team-filter { display: flex; gap: 4px; flex-wrap: wrap; }
-  .filter-pill { padding: 5px 12px; border-radius: 4px; border: 1px solid var(--border);
-    background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; color: var(--muted);
-    font-family: inherit; transition: all .2s ease; touch-action: manipulation; text-transform: uppercase; letter-spacing: 0.5px; }
-  .filter-pill:hover { border-color: var(--neon); color: var(--neon); }
-  .filter-pill.active { background: var(--neon); border-color: var(--neon); color: #000;
-    box-shadow: 0 0 12px var(--neon-glow); }
+  .d-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: all .2s;
+  }
+  .d-card.active {
+    border-color: var(--neon);
+    box-shadow: 0 0 16px var(--neon-glow);
+  }
+  .d-card-head { display: flex; align-items: center; gap: 12px; }
+  .d-card-thumb {
+    width: 54px; height: 54px; flex: none;
+    border-radius: 8px;
+    background: #000;
+    border: 1px solid #333;
+    display: grid; place-items: center;
+    overflow: hidden;
+    font-size: 22px; color: #333;
+    cursor: pointer;
+  }
+  .d-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .d-card-info { flex: 1; min-width: 0; }
+  .d-card-idx {
+    font-size: 10px; font-weight: 800;
+    color: var(--neon);
+    letter-spacing: 2px;
+    margin-bottom: 3px;
+  }
+  .d-card-name {
+    font-size: 15px; font-weight: 800;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .d-card-close {
+    width: 26px; height: 26px; flex: none;
+    border: 1px solid #333;
+    background: #000;
+    color: #888;
+    border-radius: 6px;
+    cursor: pointer;
+    display: grid; place-items: center;
+    padding: 0;
+    font-family: inherit;
+    font-size: 12px;
+  }
+  .d-card-close:hover { border-color: #ff4444; color: #ff4444; background: #110000; }
 
-  .pool-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column;
-    gap: 4px; margin: 0 -8px; padding: 0 8px; -webkit-overflow-scrolling: touch; }
-  .pool-list::-webkit-scrollbar { width: 6px; }
-  .pool-list::-webkit-scrollbar-track { background: #000; }
-  .pool-list::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-  .pool-list::-webkit-scrollbar-thumb:hover { background: var(--neon-dim); }
+  .d-member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed #333;
+  }
+  .d-member {
+    position: relative;
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 8px;
+    background: rgba(204, 255, 0, 0.04);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    min-width: 0;
+  }
+  .d-member-avatar {
+    width: 24px; height: 24px; flex: none;
+    border-radius: 50%;
+    background: #222; color: var(--neon);
+    font-size: 10px; font-weight: 800;
+    display: grid; place-items: center;
+    overflow: hidden;
+    border: 1px solid #444;
+  }
+  .d-member-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .d-member-name {
+    flex: 1; min-width: 0;
+    font-size: 10.5px; font-weight: 700;
+    color: var(--neon);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .d-member-del {
+    position: absolute;
+    top: -5px; right: -5px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1px solid #000;
+    background: #ff4444;
+    color: #fff;
+    font-size: 9px;
+    cursor: pointer;
+    display: none;
+    place-items: center;
+    padding: 0;
+    font-family: inherit;
+  }
+  .d-member:hover .d-member-del { display: grid; }
 
-  .pool-item { position: relative; display: flex; align-items: center; gap: 11px;
-    padding: 8px 10px; border: 1px solid transparent; border-radius: 8px;
-    cursor: pointer; transition: all .2s; touch-action: manipulation; }
-  .pool-item:hover { background: var(--panel-hover); border-color: #333; }
-  .pool-item.selected { background: rgba(204, 255, 0, 0.05); border-color: var(--neon-dim); }
-  .pool-item.active { background: rgba(204, 255, 0, 0.1); border-color: var(--neon);
-    box-shadow: 0 0 15px var(--neon-glow); }
-  .pool-item.in-current { background: rgba(204, 255, 0, 0.15); border-color: var(--neon); }
+  .d-member-empty {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed #333;
+    font-size: 11px; color: #555;
+    text-align: center;
+  }
+  .d-preview-empty {
+    background: var(--panel);
+    border: 1px dashed #333;
+    border-radius: 12px;
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+  .d-preview-empty strong { color: var(--neon); }
 
-  .thumb { position: relative; flex: none; width: 44px; height: 44px;
-    border-radius: 6px; border: 1px dashed #444; background: #000;
-    display: grid; place-items: center; overflow: hidden; cursor: pointer;
-    padding: 0; transition: all .2s; touch-action: manipulation; }
-  .thumb:hover { border-color: var(--neon); background: rgba(204, 255, 0, 0.05); }
-  .thumb.has-img { border-style: solid; border-color: #333; }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .thumb-ph { font-size: 16px; color: #555; line-height: 1; font-weight: 300; }
-  .thumb-del { position: absolute; top: -5px; right: -5px; width: 17px; height: 17px;
-    border-radius: 50%; border: none; background: #ff4444; color: #fff;
-    font-size: 10px; line-height: 1; cursor: pointer; display: none;
-    place-items: center; padding: 0; font-family: inherit; }
-  .thumb.has-img:hover .thumb-del { display: grid; }
-  .thumb-del:hover { background: #ff6666; }
-
-  .item-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
-  .item-title { font-size: 13px; line-height: 1.35; font-weight: 600;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #ddd; }
-  .pool-item.selected .item-title, .pool-item.in-current .item-title { color: var(--neon); }
-  .item-teams { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-  .team-badge { display: inline-block; padding: 1px 5px; border-radius: 3px;
-    font-size: 9px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.5;
-    border: 1px solid #333; color: #888; background: #000; }
-  .team-badge.team-127 { border-color: #3366ff; color: #6699ff; }
-  .team-badge.team-dream { border-color: #00ccff; color: #33ddff; }
-  .team-badge.team-wayv { border-color: #ffaa00; color: #ffcc33; }
-  .team-badge.team-wish { border-color: #ff66cc; color: #ff99dd; }
-
-  .item-badge { flex: none; min-width: 26px; height: 24px; padding: 0 7px;
-    font-size: 11px; font-weight: 900; color: #000;
-    background: var(--neon); border-radius: 4px; display: grid; place-items: center;
-    box-shadow: 0 0 10px var(--neon-glow); }
-  .item-state { flex: none; width: 24px; height: 24px; border-radius: 50%;
-    border: 1.5px solid #444; background: #000; display: grid;
-    place-items: center; font-size: 12px; font-weight: 800; color: transparent;
-    transition: all .2s ease; }
-  .pool-item.in-current .item-state { background: var(--neon); border-color: var(--neon);
-    color: #000; box-shadow: 0 0 10px var(--neon-glow); }
-  .pool-item:not(.in-current):hover .item-state { border-color: var(--neon); color: var(--neon); }
-  .pool-item:not(.in-current):hover .item-state::before { content: '+'; font-size: 14px; line-height: 1; display: block; }
-  .pool-empty { padding: 32px 12px; text-align: center; font-size: 13px; color: #555; line-height: 1.7; }
-
-  .preview-col { display: flex; flex-direction: column; gap: 14px;
-    max-height: calc(100vh - 140px); overflow-y: auto;
-    padding-right: 4px; margin: -6px 0; -webkit-overflow-scrolling: touch; }
-  .preview-col::-webkit-scrollbar { width: 6px; }
-  .preview-col::-webkit-scrollbar-track { background: #000; }
-  .preview-col::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-  .preview-col::-webkit-scrollbar-thumb:hover { background: var(--neon-dim); }
-
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 20px; transition: all .3s ease; position: relative; }
-  .card:hover { border-color: #444; box-shadow: 0 0 20px rgba(255,255,255,0.03); }
-  .card.active { border-color: var(--neon); box-shadow: 0 0 20px var(--neon-glow); }
-  .card-head { display: flex; align-items: center; gap: 14px; }
-  .card-thumb { width: 62px; height: 62px; border-radius: 8px; flex: none;
-    overflow: hidden; position: relative; background: #000; border: 1px solid #333;
-    display: grid; place-items: center; cursor: pointer; transition: transform .2s ease; touch-action: manipulation; }
-  .card-thumb:hover { transform: scale(1.05); border-color: var(--neon); }
-  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .card-thumb .ph { font-size: 24px; color: #333; line-height: 1; }
-  .card-info { flex: 1; min-width: 0; }
-  .card-idx { font-size: 10px; font-weight: 800; color: var(--neon); letter-spacing: 2px; margin-bottom: 4px; text-transform: uppercase; }
-  .card-name { font-size: 16px; font-weight: 800; line-height: 1.3; word-break: break-word; letter-spacing: 0.5px; color: #fff; }
-  .card-close { flex: none; width: 28px; height: 28px; border-radius: 6px;
-    border: 1px solid #333; background: #000; color: #888; font-size: 13px;
-    cursor: pointer; display: grid; place-items: center; padding: 0; transition: all .2s; touch-action: manipulation; }
-  .card-close:hover { border-color: #ff4444; background: #110000; color: #ff4444; transform: rotate(90deg); }
-
-  .member-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333; }
-  .m-cell { position: relative; display: flex; align-items: center; gap: 8px;
-    padding: 7px 9px; background: rgba(204, 255, 0, 0.04);
-    border: 1px solid #2a2a2a; border-radius: 6px; min-width: 0; }
-  .m-avatar { width: 28px; height: 28px; border-radius: 50%; flex: none;
-    object-fit: cover; display: grid; place-items: center;
-    background: #222; color: var(--neon); font-size: 12px; font-weight: 800; overflow: hidden; border: 1px solid #444; }
-  .m-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .m-name { font-size: 11.5px; font-weight: 700; color: var(--neon);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; letter-spacing: 0.3px; }
-  .m-del { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px;
-    border-radius: 50%; border: 1px solid #000; background: #ff4444; color: #fff;
-    font-size: 10px; line-height: 1; cursor: pointer; display: none;
-    place-items: center; padding: 0; font-family: inherit; }
-  .m-cell:hover .m-del { display: grid; }
-  .m-del:hover { background: #ff6666; }
-
-  .member-empty { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333;
-    font-size: 12px; color: #555; text-align: center; padding-bottom: 4px; }
-  .preview-empty { background: var(--panel); border: 1px dashed #333; border-radius: 12px;
-    padding: 70px 26px; text-align: center; color: #666; font-size: 13px; line-height: 1.9; letter-spacing: 0.5px; }
-  .preview-empty strong { color: var(--neon); font-weight: 800; }
-
+  /* 桌面端触屏上的删除按钮常驻 */
   @media (hover: none) {
-    .thumb.has-img .thumb-del { display: grid; }
-    .m-cell .m-del { display: grid; }
-    .pool-item:not(.in-current) .item-state::before { content: '+'; font-size: 14px; line-height: 1; display: block; color: var(--neon); }
-  }
-
-  @media (max-width: 1200px) {
-    .layout { grid-template-columns: 1fr 1fr; }
-    .preview-col { grid-column: 1 / -1; max-height: none; overflow: visible; margin: 0; padding-right: 0; }
-  }
-
-  @media (max-width: 768px) {
-    .app { padding: 14px 12px 50px; }
-    .hero { padding: 20px 12px; }
-    .topbar { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 16px; }
-    .brand { gap: 11px; }
-    .logo { width: 40px; height: 40px; border-radius: 6px; font-size: 18px; }
-    .brand h1 { font-size: 16px; }
-    .brand p { display: none; }
-    .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .actions .btn { padding: 11px 6px; font-size: 11px; text-align: center; }
-    .layout { grid-template-columns: 1fr; gap: 12px; }
-    .pool { padding: 14px; border-radius: 10px; max-height: 56vh; max-height: 56dvh; gap: 10px; }
-    .pool-head h2 { font-size: 13px; }
-    .counter { font-size: 10.5px; padding: 3px 8px; }
-    .mini-btn { padding: 6px 10px; font-size: 11px; }
-    .active-hint { font-size: 11px; padding: 8px 10px; }
-    .search { padding: 10px 12px; font-size: 13px; }
-    .filter-pill { padding: 6px 10px; font-size: 10.5px; }
-    .pool-item { padding: 9px 8px; gap: 10px; }
-    .thumb { width: 42px; height: 42px; }
-    .item-title { font-size: 12.5px; }
-    .item-state { width: 26px; height: 26px; }
-    .preview-col { max-height: none; overflow: visible; margin: 0; padding-right: 0; gap: 12px; }
-    .card { padding: 15px 16px; border-radius: 10px; }
-    .card-head { gap: 12px; }
-    .card-thumb { width: 54px; height: 54px; border-radius: 6px; }
-    .card-name { font-size: 15px; }
-    .member-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; margin-top: 13px; padding-top: 13px; }
-    .m-cell { padding: 6px 8px; gap: 7px; }
-    .m-avatar { width: 26px; height: 26px; font-size: 11px; }
-    .m-name { font-size: 11px; }
-    .preview-empty { padding: 50px 20px; font-size: 12px; }
-  }
-
-  @media (max-width: 380px) {
-    .app { padding: 12px 10px 40px; }
-    .hero { padding: 15px 10px; }
-    .brand h1 { font-size: 15px; }
-    .actions .btn { font-size: 10px; padding: 10px 4px; }
-    .pool { max-height: 52vh; max-height: 52dvh; }
-    .member-grid { grid-template-columns: 1fr; }
+    .d-member .d-member-del { display: grid; }
   }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <img src="images/header.jpg" alt="NCT 2026 10TH ANNIVERSARY"
-       onerror="this.parentNode.style.display='none'">
-</div>
+<!-- ============================================================
+     移动端
+     ============================================================ -->
+<div class="mobile-ui" id="mobileUI">
 
-<div class="app">
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">N</div>
-      <div>
-        <h1>NCT 2026 <span>SETLIST</span> 选择器</h1>
-        <p>SELECT SONGS &amp; MEMBERS</p>
-      </div>
-    </div>
-    <div class="actions">
-      <button class="btn ghost" id="btnExportData">导出图片数据</button>
-      <button class="btn" id="btnClear">清空全部</button>
-      <button class="btn primary" id="btnExport">导出图片</button>
-    </div>
+  <header class="m-header">
+    <div class="m-logo">N</div>
+    <div class="m-title">NCT 2026 <span>SETLIST</span></div>
+    <button class="m-icon-btn" id="mBtnExportData" title="导出图片数据">⬆</button>
+    <button class="m-icon-btn" id="mBtnClear" title="清空">✕</button>
+    <button class="m-icon-btn primary" id="mBtnExport" title="导出图片">⬇</button>
   </header>
 
-  <div class="layout">
-    <section class="pool">
-      <div class="pool-head">
-        <h2>SONG POOL</h2>
-        <span class="counter" id="songCounter">已选 0</span>
-      </div>
-      <input type="text" class="search" id="songSearch" placeholder="搜索曲目…">
-      <div class="pool-list" id="songPool"></div>
-    </section>
+  <div class="m-preview" id="mPreview"></div>
 
-    <section class="pool">
-      <div class="pool-head">
-        <h2>MEMBER POOL</h2>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <button type="button" class="mini-btn" id="btnSelectAllMembers">全员</button>
-          <button type="button" class="mini-btn danger" id="btnClearMembers">清空</button>
-          <span class="counter" id="memberCounter">已选 0</span>
+  <div class="m-tabs">
+    <button class="m-tab active" data-tab="songs" id="mTabSongs">曲目池</button>
+    <button class="m-tab" data-tab="members" id="mTabMembers">成员池</button>
+  </div>
+
+  <div class="m-controls">
+    <div class="m-search-wrap">
+      <span class="m-search-icon">🔍</span>
+      <input type="search" class="m-search" id="mSearch" placeholder="搜索曲目…">
+    </div>
+    <div class="m-filters" id="mFilters" style="display:none"></div>
+  </div>
+
+  <div class="m-list" id="mList"></div>
+
+</div>
+
+<!-- ============================================================
+     桌面端
+     ============================================================ -->
+<div class="desktop-ui" id="desktopUI">
+
+  <div class="d-hero">
+    <img src="images/header.jpg" alt="NCT 2026" onerror="this.parentNode.style.display='none'">
+  </div>
+
+  <div class="d-app">
+    <header class="d-topbar">
+      <div class="d-brand">
+        <div class="d-logo">N</div>
+        <div>
+          <h1>NCT 2026 <span>SETLIST</span></h1>
+          <p>SELECT SONGS &amp; MEMBERS</p>
         </div>
       </div>
-      <div class="active-hint warn" id="activeHint">请先添加曲目</div>
-      <div class="team-filter" id="teamFilter"></div>
-      <input type="text" class="search" id="memberSearch" placeholder="搜索成员…">
-      <div class="pool-list" id="memberPool"></div>
-    </section>
+      <div class="d-actions">
+        <button class="d-btn ghost" id="dBtnExportData">导出图片数据</button>
+        <button class="d-btn" id="dBtnClear">清空全部</button>
+        <button class="d-btn primary" id="dBtnExport">导出图片</button>
+      </div>
+    </header>
 
-    <div class="preview-col" id="preview"></div>
+    <div class="d-layout">
+      <section class="d-pool">
+        <div class="d-pool-head">
+          <h2>SONG POOL</h2>
+          <span class="d-counter" id="dSongCounter">已选 0</span>
+        </div>
+        <input type="text" class="d-search" id="dSongSearch" placeholder="搜索曲目…">
+        <div class="d-list" id="dSongList"></div>
+      </section>
+
+      <section class="d-pool">
+        <div class="d-pool-head">
+          <h2>MEMBER POOL</h2>
+          <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+            <button class="d-mini" id="dBtnSelectAll">全员</button>
+            <button class="d-mini danger" id="dBtnClearMembers">清空</button>
+            <span class="d-counter" id="dMemberCounter">已选 0</span>
+          </div>
+        </div>
+        <div class="d-hint warn" id="dHint">请先添加曲目</div>
+        <div class="d-teams" id="dTeamFilter"></div>
+        <input type="text" class="d-search" id="dMemberSearch" placeholder="搜索成员…">
+        <div class="d-list" id="dMemberList"></div>
+      </section>
+
+      <div class="d-preview" id="dPreview"></div>
+    </div>
   </div>
+
 </div>
 
 <script>
 /* ============================================================
-   ① 预填数据区
+   ① 数据
    ============================================================ */
 const CONFIG = {
   title: 'NCT 2026 公演',
   subtitle: '～10TH ANNIVERSARY～',
   team: 'NCT',
   date: '2026',
-  url: 'https://你的网址.github.io'   /* ← 改这里，导出图片底部会显示 */
+  url: 'https://glacier126.github.io/NCTNATION'
 };
 
 const SONG_POOL = [
@@ -356,7 +862,7 @@ const SONG_POOL = [
 ];
 
 const TEAMS = [
-  { key: 'all',   short: 'ALL',   label: 'ALL' },
+  { key: 'all',   short: '全部',  label: '全部' },
   { key: '127',   short: '127',   label: 'NCT 127' },
   { key: 'dream', short: 'DREAM', label: 'NCT DREAM' },
   { key: 'wayv',  short: 'WayV',  label: 'WayV' },
@@ -432,57 +938,45 @@ const DEFAULT_MEMBER_IMAGES = {
 };
 
 /* ============================================================
-   ② 程序逻辑
+   ② 状态与工具
    ============================================================ */
-const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif';
-const STORAGE_KEY = 'nct-setlist-picker-v7';
+const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
+const STORAGE_KEY = 'nct-setlist-picker-v8';
 
 const state = { setlist: [], activeIndex: -1, songImages: {}, memberImages: {} };
-let currentTeamFilter = 'all';
+let currentTeam = 'all';
+let mobileTab = 'songs';
 
 const $ = id => document.getElementById(id);
-const el = {
-  songPool: $('songPool'), memberPool: $('memberPool'),
-  songSearch: $('songSearch'), memberSearch: $('memberSearch'),
-  songCounter: $('songCounter'), memberCounter: $('memberCounter'),
-  activeHint: $('activeHint'), preview: $('preview'),
-  teamFilter: $('teamFilter'),
-  btnClear: $('btnClear'), btnExport: $('btnExport'), btnExportData: $('btnExportData'),
-  btnSelectAllMembers: $('btnSelectAllMembers'),
-  btnClearMembers: $('btnClearMembers')
-};
-
-function pad2(n) { return String(n).padStart(2, '0'); }
-function esc(s) {
+function pad2(n){ return String(n).padStart(2,'0'); }
+function esc(s){
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 }
-function fitText(ctx, text, maxWidth, font) {
+function roundRect(ctx,x,y,w,h,r){
+  r = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function fitText(ctx, text, maxWidth, font){
   ctx.font = font;
   if (!text) return '';
   if (ctx.measureText(text).width <= maxWidth) return text;
-  let lo = 0, hi = text.length;
-  while (lo < hi) {
-    const mid = Math.ceil((lo + hi) / 2);
-    if (ctx.measureText(text.slice(0, mid) + '…').width <= maxWidth) lo = mid;
-    else hi = mid - 1;
+  let lo=0, hi=text.length;
+  while (lo<hi){
+    const mid = Math.ceil((lo+hi)/2);
+    if (ctx.measureText(text.slice(0,mid)+'…').width <= maxWidth) lo = mid;
+    else hi = mid-1;
   }
-  return text.slice(0, lo) + '…';
-}
-function roundRect(ctx, x, y, w, h, r) {
-  r = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
+  return text.slice(0,lo)+'…';
 }
 
+/* 图片加载缓存 */
 const imgCache = new Map();
-function loadImage(src) {
+function loadImage(src){
   if (!src) return Promise.resolve(null);
   if (imgCache.has(src)) return Promise.resolve(imgCache.get(src));
   return new Promise(resolve => {
@@ -493,7 +987,7 @@ function loadImage(src) {
   });
 }
 
-function readImageFile(file, maxSize) {
+function readImageFile(file, maxSize){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = reject;
@@ -502,15 +996,15 @@ function readImageFile(file, maxSize) {
       img.onerror = reject;
       img.onload = () => {
         let w = img.naturalWidth, h = img.naturalHeight;
-        const scale = Math.min(1, maxSize / Math.max(w, h));
-        w = Math.max(1, Math.round(w * scale));
-        h = Math.max(1, Math.round(h * scale));
+        const scale = Math.min(1, maxSize / Math.max(w,h));
+        w = Math.max(1, Math.round(w*scale));
+        h = Math.max(1, Math.round(h*scale));
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(img, 0, 0, w, h);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
         resolve(c.toDataURL('image/jpeg', 0.85));
       };
       img.src = e.target.result;
@@ -519,6 +1013,7 @@ function readImageFile(file, maxSize) {
   });
 }
 
+/* 全局文件选择器 */
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = 'image/*';
@@ -540,8 +1035,14 @@ fileInput.addEventListener('change', async () => {
   } catch (err) { alert('图片读取失败，请换一张试试'); }
 });
 
-function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
-function load() {
+function openImagePicker(type, index){
+  pendingTarget = { type, index };
+  fileInput.click();
+}
+
+/* 存储 */
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
+function load(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -552,26 +1053,306 @@ function load() {
       if (typeof d.activeIndex !== 'number') d.activeIndex = d.setlist.length ? 0 : -1;
       return d;
     }
-  } catch (e) {}
+  } catch(e){}
   return null;
 }
 
-function renderTeamFilter() {
-  el.teamFilter.innerHTML = TEAMS.map(t =>
-    '<button type="button" class="filter-pill' +
-    (currentTeamFilter === t.key ? ' active' : '') +
+/* ============================================================
+   ③ 通用状态操作
+   ============================================================ */
+function selectSong(index){
+  const pos = state.setlist.findIndex(it => it.song === index);
+  if (pos >= 0) {
+    state.activeIndex = pos;
+  } else {
+    state.setlist.push({ song: index, members: [] });
+    state.activeIndex = state.setlist.length - 1;
+  }
+  save(); renderAll();
+}
+
+function toggleMember(index){
+  const target = state.setlist[state.activeIndex];
+  if (!target) { alert('请先选择一首曲目'); return; }
+  const pos = target.members.indexOf(index);
+  if (pos >= 0) target.members.splice(pos, 1);
+  else target.members.push(index);
+  save(); renderAll();
+}
+
+function removeSong(si){
+  state.setlist.splice(si, 1);
+  if (state.activeIndex >= state.setlist.length) state.activeIndex = state.setlist.length - 1;
+  else if (si < state.activeIndex) state.activeIndex--;
+  save(); renderAll();
+}
+
+function removeMemberFromSong(si, pos){
+  const t = state.setlist[si];
+  if (t) { t.members.splice(pos, 1); save(); renderAll(); }
+}
+
+function clearAll(){
+  if (!state.setlist.length &&
+      !Object.keys(state.songImages).length &&
+      !Object.keys(state.memberImages).length) return;
+  if (!confirm('确定要清空所有已选曲目、成员和图片吗？')) return;
+  state.setlist = [];
+  state.activeIndex = -1;
+  state.songImages = {};
+  state.memberImages = {};
+  save(); renderAll();
+}
+
+/* ============================================================
+   ④ 移动端渲染
+   ============================================================ */
+const mobileUI = $('mobileUI');
+const mPreview = $('mPreview');
+const mList = $('mList');
+const mSearch = $('mSearch');
+const mFilters = $('mFilters');
+const mTabSongs = $('mTabSongs');
+const mTabMembers = $('mTabMembers');
+
+function isMobile(){ return window.matchMedia('(max-width: 819px)').matches; }
+
+function renderMobile(){
+  if (!isMobile()) return;
+  renderMobilePreview();
+  renderMobileControls();
+  renderMobileList();
+}
+
+function renderMobilePreview(){
+  if (!state.setlist.length) {
+    mPreview.innerHTML =
+      '<div class="m-preview-empty">' +
+        '还没有选择曲目<br>' +
+        '在下方<strong>曲目池</strong>点击加入' +
+      '</div>';
+    return;
+  }
+  let html = '';
+  state.setlist.forEach((item, si) => {
+    const song = SONG_POOL[item.song];
+    if (!song) return;
+    const songImg = state.songImages[item.song];
+    const active = si === state.activeIndex;
+
+    let avatars = '';
+    const showMax = 6;
+    item.members.slice(0, showMax).forEach(mi => {
+      const m = MEMBER_POOL[mi];
+      const name = m ? m.name : '';
+      const mImg = state.memberImages[mi];
+      avatars +=
+        '<span class="m-pv-avatar">' +
+          (mImg ? '<img src="' + mImg + '" alt="">' : esc((name||'?').charAt(0))) +
+        '</span>';
+    });
+    if (item.members.length > showMax) {
+      avatars += '<span class="m-pv-more">+' + (item.members.length - showMax) + '</span>';
+    }
+    if (!item.members.length) {
+      avatars = '<span class="m-pv-none">未选成员</span>';
+    }
+
+    html +=
+      '<div class="m-pv-song' + (active ? ' active' : '') + '" data-si="' + si + '">' +
+        '<div class="m-pv-thumb">' +
+          (songImg ? '<img src="' + songImg + '" alt="">' : '♪') +
+        '</div>' +
+        '<div class="m-pv-body">' +
+          '<div class="m-pv-name">' + pad2(si+1) + '. ' + esc(song.title) + '</div>' +
+          '<div class="m-pv-members">' + avatars + '</div>' +
+        '</div>' +
+        '<div class="m-pv-count">' + item.members.length + '</div>' +
+      '</div>';
+  });
+  mPreview.innerHTML = html;
+
+  // 自动滚动到当前曲目
+  const activeEl = mPreview.querySelector('.m-pv-song.active');
+  if (activeEl) {
+    const containerTop = mPreview.scrollTop;
+    const containerBottom = containerTop + mPreview.clientHeight;
+    const elTop = activeEl.offsetTop;
+    const elBottom = elTop + activeEl.offsetHeight;
+    if (elTop < containerTop || elBottom > containerBottom) {
+      mPreview.scrollTop = elTop - 8;
+    }
+  }
+}
+
+function renderMobileControls(){
+  mSearch.placeholder = mobileTab === 'songs' ? '搜索曲目…' : '搜索成员…';
+
+  if (mobileTab === 'members') {
+    mFilters.style.display = 'flex';
+    mFilters.innerHTML = TEAMS.map(t =>
+      '<button class="m-filter' + (currentTeam === t.key ? ' active' : '') +
+      '" data-team="' + t.key + '">' + esc(t.label) + '</button>'
+    ).join('');
+  } else {
+    mFilters.style.display = 'none';
+  }
+}
+
+function renderMobileList(){
+  if (mobileTab === 'songs') {
+    const q = mSearch.value.trim().toLowerCase();
+    const frag = document.createDocumentFragment();
+    let shown = 0;
+
+    SONG_POOL.forEach((song, i) => {
+      if (q && !song.title.toLowerCase().includes(q)) return;
+      shown++;
+
+      const listPos = state.setlist.findIndex(it => it.song === i);
+      const selected = listPos >= 0;
+      const active = selected && listPos === state.activeIndex;
+      const img = state.songImages[i];
+
+      const div = document.createElement('div');
+      div.className = 'm-item' + (selected ? ' selected' : '') + (active ? ' in-current' : '');
+      div.dataset.songIndex = i;
+      div.innerHTML =
+        '<div class="m-item-thumb">' +
+          (img ? '<img src="' + img + '" alt="" loading="lazy">' : '♪') +
+        '</div>' +
+        '<div class="m-item-body">' +
+          '<div class="m-item-name">' + esc(song.title) + '</div>' +
+        '</div>' +
+        (selected
+          ? '<div class="m-item-badge">' + pad2(listPos+1) + '</div>'
+          : '<div class="m-item-state"></div>');
+      frag.appendChild(div);
+    });
+
+    mList.innerHTML = '';
+    if (!shown) mList.innerHTML = '<div class="m-empty">没有匹配的曲目</div>';
+    else mList.appendChild(frag);
+
+  } else {
+    const q = mSearch.value.trim().toLowerCase();
+    const frag = document.createDocumentFragment();
+    let shown = 0;
+    const target = state.setlist[state.activeIndex];
+    const inCurrent = target ? target.members : [];
+
+    MEMBER_POOL.forEach((member, i) => {
+      if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
+      if (q && !member.name.toLowerCase().includes(q)) return;
+      shown++;
+
+      const img = state.memberImages[i];
+      const isIn = inCurrent.includes(i);
+      const teamTags = member.teams.map(t => {
+        const info = TEAMS.find(x => x.key === t);
+        return '<span class="m-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
+      }).join('');
+
+      const div = document.createElement('div');
+      div.className = 'm-item' + (isIn ? ' in-current' : '');
+      div.dataset.memberIndex = i;
+      div.innerHTML =
+        '<div class="m-item-thumb">' +
+          (img ? '<img src="' + img + '" alt="" loading="lazy">' : esc(member.name.charAt(0))) +
+        '</div>' +
+        '<div class="m-item-body">' +
+          '<div class="m-item-name">' + esc(member.name) + '</div>' +
+          '<div class="m-item-tags">' + teamTags + '</div>' +
+        '</div>' +
+        '<div class="m-item-state">' + (isIn ? '✓' : '') + '</div>';
+      frag.appendChild(div);
+    });
+
+    mList.innerHTML = '';
+    if (!shown) mList.innerHTML = '<div class="m-empty">没有匹配的成员</div>';
+    else mList.appendChild(frag);
+  }
+}
+
+/* --- 移动端事件 --- */
+mPreview.addEventListener('click', e => {
+  const el = e.target.closest('.m-pv-song');
+  if (!el) return;
+  state.activeIndex = Number(el.dataset.si);
+  save(); renderAll();
+});
+
+mList.addEventListener('click', e => {
+  const item = e.target.closest('.m-item');
+  if (!item) return;
+  if (item.dataset.songIndex !== undefined) {
+    selectSong(Number(item.dataset.songIndex));
+  } else if (item.dataset.memberIndex !== undefined) {
+    toggleMember(Number(item.dataset.memberIndex));
+  }
+});
+
+mSearch.addEventListener('input', renderMobileList);
+
+mFilters.addEventListener('click', e => {
+  const btn = e.target.closest('.m-filter');
+  if (!btn) return;
+  currentTeam = btn.dataset.team;
+  renderMobileControls();
+  renderMobileList();
+});
+
+mTabSongs.addEventListener('click', () => {
+  mobileTab = 'songs';
+  mTabSongs.classList.add('active');
+  mTabMembers.classList.remove('active');
+  mSearch.value = '';
+  renderMobileControls();
+  renderMobileList();
+});
+
+mTabMembers.addEventListener('click', () => {
+  mobileTab = 'members';
+  mTabMembers.classList.add('active');
+  mTabSongs.classList.remove('active');
+  mSearch.value = '';
+  renderMobileControls();
+  renderMobileList();
+});
+
+$('mBtnClear').addEventListener('click', clearAll);
+$('mBtnExport').addEventListener('click', exportImage);
+$('mBtnExportData').addEventListener('click', exportImageData);
+
+/* ============================================================
+   ⑤ 桌面端渲染
+   ============================================================ */
+const dSongList = $('dSongList');
+const dMemberList = $('dMemberList');
+const dPreview = $('dPreview');
+const dSongSearch = $('dSongSearch');
+const dMemberSearch = $('dMemberSearch');
+const dTeamFilter = $('dTeamFilter');
+const dHint = $('dHint');
+
+function renderDesktop(){
+  if (isMobile()) return;
+  renderDesktopSongList();
+  renderDesktopMemberList();
+  renderDesktopTeams();
+  renderDesktopHint();
+  renderDesktopPreview();
+}
+
+function renderDesktopTeams(){
+  dTeamFilter.innerHTML = TEAMS.map(t =>
+    '<button class="d-team' + (currentTeam === t.key ? ' active' : '') +
     '" data-team="' + t.key + '">' + esc(t.label) + '</button>'
   ).join('');
 }
-el.teamFilter.addEventListener('click', e => {
-  const btn = e.target.closest('.filter-pill');
-  if (!btn) return;
-  currentTeamFilter = btn.dataset.team;
-  renderTeamFilter(); renderMemberPool();
-});
 
-function renderSongPool() {
-  const q = el.songSearch.value.trim().toLowerCase();
+function renderDesktopSongList(){
+  const q = dSongSearch.value.trim().toLowerCase();
   const frag = document.createDocumentFragment();
   let shown = 0;
   SONG_POOL.forEach((song, i) => {
@@ -581,180 +1362,169 @@ function renderSongPool() {
     const selected = listPos >= 0;
     const active = selected && listPos === state.activeIndex;
     const img = state.songImages[i];
+
     const div = document.createElement('div');
-    div.className = 'pool-item' + (selected ? ' selected' : '') + (active ? ' active' : '');
-    div.dataset.index = i;
+    div.className = 'd-item' + (selected ? ' selected' : '') + (active ? ' active' : '');
+    div.dataset.songIndex = i;
     div.innerHTML =
-      '<button type="button" class="thumb' + (img ? ' has-img' : '') + '" data-act="img" title="上传图片">' +
-        (img ? '<img src="' + img + '" alt="">' : '<span class="thumb-ph">+</span>') +
-        (img ? '<span class="thumb-del" data-act="delimg" title="移除图片">✕</span>' : '') +
-      '</button>' +
-      '<div class="item-body"><div class="item-title">' + esc(song.title) + '</div></div>' +
-      (selected ? '<div class="item-badge">' + pad2(listPos + 1) + '</div>' : '');
+      '<div class="d-item-thumb' + (img ? ' has-img' : '') + '" data-act="img">' +
+        (img ? '<img src="' + img + '" alt="">' : '+') +
+      '</div>' +
+      '<div class="d-item-body"><div class="d-item-name">' + esc(song.title) + '</div></div>' +
+      (selected ? '<div class="d-badge">' + pad2(listPos+1) + '</div>' : '');
     frag.appendChild(div);
   });
-  el.songPool.innerHTML = '';
-  if (!shown) { el.songPool.innerHTML = '<div class="pool-empty">没有匹配的曲目</div>'; }
-  else { el.songPool.appendChild(frag); }
-  el.songCounter.textContent = '已选 ' + state.setlist.length;
+  dSongList.innerHTML = '';
+  if (!shown) dSongList.innerHTML = '<div class="d-empty">没有匹配的曲目</div>';
+  else dSongList.appendChild(frag);
+  $('dSongCounter').textContent = '已选 ' + state.setlist.length;
 }
 
-function renderMemberPool() {
-  const q = el.memberSearch.value.trim().toLowerCase();
+function renderDesktopMemberList(){
+  const q = dMemberSearch.value.trim().toLowerCase();
   const frag = document.createDocumentFragment();
   let shown = 0;
   const target = state.setlist[state.activeIndex];
   const inCurrent = target ? target.members : [];
+
   MEMBER_POOL.forEach((member, i) => {
-    if (currentTeamFilter !== 'all' && !member.teams.includes(currentTeamFilter)) return;
+    if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
     if (q && !member.name.toLowerCase().includes(q)) return;
     shown++;
+
     const img = state.memberImages[i];
     const isIn = inCurrent.includes(i);
-    const teamBadges = member.teams.map(t => {
+    const tags = member.teams.map(t => {
       const info = TEAMS.find(x => x.key === t);
-      return '<span class="team-badge team-' + t + '">' + esc(info ? info.short : t) + '</span>';
+      return '<span class="d-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
     }).join('');
+
     const div = document.createElement('div');
-    div.className = 'pool-item' + (isIn ? ' in-current' : '');
-    div.dataset.index = i;
+    div.className = 'd-item' + (isIn ? ' in-current' : '');
+    div.dataset.memberIndex = i;
     div.innerHTML =
-      '<button type="button" class="thumb' + (img ? ' has-img' : '') + '" data-act="img" title="上传图片">' +
-        (img ? '<img src="' + img + '" alt="">' : '<span class="thumb-ph">+</span>') +
-        (img ? '<span class="thumb-del" data-act="delimg" title="移除图片">✕</span>' : '') +
-      '</button>' +
-      '<div class="item-body">' +
-        '<div class="item-title">' + esc(member.name) + '</div>' +
-        '<div class="item-teams">' + teamBadges + '</div>' +
+      '<div class="d-item-thumb' + (img ? ' has-img' : '') + '" data-act="img">' +
+        (img ? '<img src="' + img + '" alt="">' : '+') +
       '</div>' +
-      '<div class="item-state">' + (isIn ? '✓' : '') + '</div>';
+      '<div class="d-item-body">' +
+        '<div class="d-item-name">' + esc(member.name) + '</div>' +
+        '<div class="d-item-tags">' + tags + '</div>' +
+      '</div>' +
+      '<div class="d-state">' + (isIn ? '✓' : '') + '</div>';
     frag.appendChild(div);
   });
-  el.memberPool.innerHTML = '';
-  if (!shown) { el.memberPool.innerHTML = '<div class="pool-empty">' + (currentTeamFilter !== 'all' ? '该队伍暂无成员' : '没有匹配的成员') + '</div>'; }
-  else { el.memberPool.appendChild(frag); }
+  dMemberList.innerHTML = '';
+  if (!shown) dMemberList.innerHTML = '<div class="d-empty">没有匹配的成员</div>';
+  else dMemberList.appendChild(frag);
+
   const count = target ? target.members.length : 0;
-  el.memberCounter.textContent = '已选 ' + count;
+  $('dMemberCounter').textContent = '已选 ' + count;
 }
 
-function renderActiveHint() {
+function renderDesktopHint(){
   const item = state.setlist[state.activeIndex];
   if (!item) {
-    el.activeHint.className = 'active-hint warn';
-    el.activeHint.textContent = state.setlist.length ? '请点击右侧曲目卡片选择' : '请先添加曲目';
+    dHint.className = 'd-hint warn';
+    dHint.textContent = state.setlist.length ? '请点击右侧曲目卡片选择' : '请先添加曲目';
     return;
   }
-  el.activeHint.className = 'active-hint';
+  dHint.className = 'd-hint';
   const song = SONG_POOL[item.song];
-  el.activeHint.textContent = '正在为「' + (song ? song.title : '') + '」选成员（已选 ' + item.members.length + ' 人）';
+  dHint.textContent = '正在为「' + (song ? song.title : '') + '」选成员（已选 ' + item.members.length + ' 人）';
 }
 
-function renderPreview() {
+function renderDesktopPreview(){
   if (!state.setlist.length) {
-    el.preview.innerHTML = '<div class="preview-empty">还没有选择曲目<br>在左侧<strong>SONG POOL</strong>点击即可加入曲目单</div>';
+    dPreview.innerHTML =
+      '<div class="d-preview-empty">' +
+        '还没有选择曲目<br>在左侧<strong>曲目池</strong>点击加入' +
+      '</div>';
     return;
   }
   const frag = document.createDocumentFragment();
   state.setlist.forEach((item, si) => {
     const song = SONG_POOL[item.song];
     if (!song) return;
-    const card = document.createElement('div');
-    card.className = 'card' + (si === state.activeIndex ? ' active' : '');
-    card.dataset.index = si;
     const songImg = state.songImages[item.song];
+    const card = document.createElement('div');
+    card.className = 'd-card' + (si === state.activeIndex ? ' active' : '');
+    card.dataset.si = si;
+
     let html =
-      '<div class="card-head">' +
-        '<div class="card-thumb" data-act="songimg">' +
-          (songImg ? '<img src="' + songImg + '" alt="">' : '<span class="ph">♪</span>') +
+      '<div class="d-card-head">' +
+        '<div class="d-card-thumb" data-act="songimg">' +
+          (songImg ? '<img src="' + songImg + '" alt="" loading="lazy">' : '♪') +
         '</div>' +
-        '<div class="card-info">' +
-          '<div class="card-idx">' + pad2(si + 1) + ' / ' + item.members.length + ' 人</div>' +
-          '<div class="card-name">' + esc(song.title) + '</div>' +
+        '<div class="d-card-info">' +
+          '<div class="d-card-idx">' + pad2(si+1) + ' / ' + item.members.length + ' 人</div>' +
+          '<div class="d-card-name">' + esc(song.title) + '</div>' +
         '</div>' +
-        '<button type="button" class="card-close" data-act="removesong" title="移除该曲目">✕</button>' +
+        '<button class="d-card-close" data-act="removesong">✕</button>' +
       '</div>';
+
     if (item.members.length) {
-      html += '<div class="member-grid">';
+      html += '<div class="d-member-grid">';
       item.members.forEach((mi, k) => {
         const m = MEMBER_POOL[mi];
         const name = m ? m.name : '';
         const mImg = state.memberImages[mi];
-        html += '<div class="m-cell">' +
-            '<span class="m-avatar">' + (mImg ? '<img src="' + mImg + '" alt="">' : esc((name || '?').charAt(0))) + '</span>' +
-            '<span class="m-name">' + esc(name) + '</span>' +
-            '<button type="button" class="m-del" data-act="removemember" data-pos="' + k + '" title="移除">✕</button>' +
+        html +=
+          '<div class="d-member">' +
+            '<span class="d-member-avatar">' +
+              (mImg ? '<img src="' + mImg + '" alt="" loading="lazy">' : esc((name||'?').charAt(0))) +
+            '</span>' +
+            '<span class="d-member-name">' + esc(name) + '</span>' +
+            '<button class="d-member-del" data-act="removemember" data-pos="' + k + '">✕</button>' +
           '</div>';
       });
       html += '</div>';
-    } else { html += '<div class="member-empty">尚未选择成员</div>'; }
+    } else {
+      html += '<div class="d-member-empty">尚未选择成员</div>';
+    }
+
     card.innerHTML = html;
     frag.appendChild(card);
   });
-  el.preview.innerHTML = '';
-  el.preview.appendChild(frag);
+  dPreview.innerHTML = '';
+  dPreview.appendChild(frag);
 }
 
-function renderAll() { renderSongPool(); renderMemberPool(); renderActiveHint(); renderPreview(); }
-
-el.songPool.addEventListener('click', e => {
-  const item = e.target.closest('.pool-item');
+/* --- 桌面端事件 --- */
+dSongList.addEventListener('click', e => {
+  const item = e.target.closest('.d-item');
   if (!item) return;
-  const index = Number(item.dataset.index);
-  const actEl = e.target.closest('[data-act]');
-  if (actEl) {
-    const act = actEl.dataset.act;
-    if (act === 'img') { e.stopPropagation(); pendingTarget = { type: 'song', index }; fileInput.click(); return; }
-    if (act === 'delimg') { e.stopPropagation(); delete state.songImages[index]; save(); renderAll(); return; }
-  }
-  const pos = state.setlist.findIndex(it => it.song === index);
-  if (pos >= 0) { state.activeIndex = pos; }
-  else { state.setlist.push({ song: index, members: [] }); state.activeIndex = state.setlist.length - 1; }
-  save(); renderAll();
+  const index = Number(item.dataset.songIndex);
+  const imgBtn = e.target.closest('[data-act="img"]');
+  if (imgBtn) { e.stopPropagation(); openImagePicker('song', index); return; }
+  selectSong(index);
 });
 
-el.memberPool.addEventListener('click', e => {
-  const item = e.target.closest('.pool-item');
+dMemberList.addEventListener('click', e => {
+  const item = e.target.closest('.d-item');
   if (!item) return;
-  const index = Number(item.dataset.index);
-  const actEl = e.target.closest('[data-act]');
-  if (actEl) {
-    const act = actEl.dataset.act;
-    if (act === 'img') { e.stopPropagation(); pendingTarget = { type: 'member', index }; fileInput.click(); return; }
-    if (act === 'delimg') { e.stopPropagation(); delete state.memberImages[index]; save(); renderAll(); return; }
-  }
-  const target = state.setlist[state.activeIndex];
-  if (!target) { alert('请先在左侧曲目池选择一首曲目'); return; }
-  const pos = target.members.indexOf(index);
-  if (pos >= 0) { target.members.splice(pos, 1); }
-  else { target.members.push(index); }
-  save(); renderAll();
+  const index = Number(item.dataset.memberIndex);
+  const imgBtn = e.target.closest('[data-act="img"]');
+  if (imgBtn) { e.stopPropagation(); openImagePicker('member', index); return; }
+  toggleMember(index);
 });
 
-el.preview.addEventListener('click', e => {
-  const card = e.target.closest('.card');
+dPreview.addEventListener('click', e => {
+  const card = e.target.closest('.d-card');
   if (!card) return;
-  const si = Number(card.dataset.index);
-  const actEl = e.target.closest('[data-act]');
-  if (actEl) {
-    const act = actEl.dataset.act;
-    if (act === 'removesong') {
+  const si = Number(card.dataset.si);
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const a = act.dataset.act;
+    if (a === 'removesong') { e.stopPropagation(); removeSong(si); return; }
+    if (a === 'removemember') {
       e.stopPropagation();
-      state.setlist.splice(si, 1);
-      if (state.activeIndex >= state.setlist.length) state.activeIndex = state.setlist.length - 1;
-      else if (si < state.activeIndex) state.activeIndex--;
-      save(); renderAll(); return;
-    }
-    if (act === 'removemember') {
-      e.stopPropagation();
-      const pos = Number(actEl.dataset.pos);
-      const target = state.setlist[si];
-      if (target) { target.members.splice(pos, 1); save(); renderAll(); }
+      removeMemberFromSong(si, Number(act.dataset.pos));
       return;
     }
-    if (act === 'songimg') {
+    if (a === 'songimg') {
       e.stopPropagation();
-      const target = state.setlist[si];
-      if (target) { pendingTarget = { type: 'song', index: target.song }; fileInput.click(); }
+      const t = state.setlist[si];
+      if (t) openImagePicker('song', t.song);
       return;
     }
   }
@@ -762,61 +1532,79 @@ el.preview.addEventListener('click', e => {
   save(); renderAll();
 });
 
-el.songSearch.addEventListener('input', renderSongPool);
-el.memberSearch.addEventListener('input', renderMemberPool);
+dSongSearch.addEventListener('input', renderDesktopSongList);
+dMemberSearch.addEventListener('input', renderDesktopMemberList);
+dTeamFilter.addEventListener('click', e => {
+  const btn = e.target.closest('.d-team');
+  if (!btn) return;
+  currentTeam = btn.dataset.team;
+  renderDesktopTeams();
+  renderDesktopMemberList();
+});
 
-el.btnSelectAllMembers.addEventListener('click', () => {
+$('dBtnSelectAll').addEventListener('click', () => {
   const target = state.setlist[state.activeIndex];
-  if (!target) { alert('请先在左侧曲目池选择一首曲目'); return; }
-  const q = el.memberSearch.value.trim().toLowerCase();
-  MEMBER_POOL.forEach((member, i) => {
-    if (currentTeamFilter !== 'all' && !member.teams.includes(currentTeamFilter)) return;
-    if (q && !member.name.toLowerCase().includes(q)) return;
+  if (!target) { alert('请先选择一首曲目'); return; }
+  const q = dMemberSearch.value.trim().toLowerCase();
+  MEMBER_POOL.forEach((m, i) => {
+    if (currentTeam !== 'all' && !m.teams.includes(currentTeam)) return;
+    if (q && !m.name.toLowerCase().includes(q)) return;
     if (!target.members.includes(i)) target.members.push(i);
   });
   save(); renderAll();
 });
 
-el.btnClearMembers.addEventListener('click', () => {
+$('dBtnClearMembers').addEventListener('click', () => {
   const target = state.setlist[state.activeIndex];
-  if (!target) { alert('请先在左侧曲目池选择一首曲目'); return; }
+  if (!target) { alert('请先选择一首曲目'); return; }
   if (!target.members.length) return;
   if (!confirm('确定要移除该曲目的全部成员吗？')) return;
-  target.members = []; save(); renderAll();
-});
-
-el.btnClear.addEventListener('click', () => {
-  if (!state.setlist.length && !Object.keys(state.songImages).length && !Object.keys(state.memberImages).length) return;
-  if (!confirm('确定要清空所有已选曲目、成员和图片吗？')) return;
-  state.setlist = []; state.activeIndex = -1;
-  state.songImages = {}; state.memberImages = {};
+  target.members = [];
   save(); renderAll();
 });
 
-el.btnExportData.addEventListener('click', () => {
-  const songImgs = state.songImages; const memberImgs = state.memberImages;
-  if (!Object.keys(songImgs).length && !Object.keys(memberImgs).length) { alert('还没有上传任何图片'); return; }
-  let js = '/* 自动生成的图片数据文件 —— 上传到网站根目录即可让所有人看到 */\n';
+$('dBtnClear').addEventListener('click', clearAll);
+$('dBtnExport').addEventListener('click', exportImage);
+$('dBtnExportData').addEventListener('click', exportImageData);
+
+/* ============================================================
+   ⑥ 统一渲染入口
+   ============================================================ */
+function renderAll(){
+  if (isMobile()) renderMobile();
+  else renderDesktop();
+}
+
+/* ============================================================
+   ⑦ 导出图片数据
+   ============================================================ */
+function exportImageData(){
+  const songImgs = state.songImages;
+  const memberImgs = state.memberImages;
+  if (!Object.keys(songImgs).length && !Object.keys(memberImgs).length) {
+    alert('还没有上传任何图片'); return;
+  }
+  let js = '/* 自动生成的图片数据文件 */\n';
   js += 'window.DEFAULT_SONG_IMAGES = ' + JSON.stringify(songImgs) + ';\n';
   js += 'window.DEFAULT_MEMBER_IMAGES = ' + JSON.stringify(memberImgs) + ';\n';
   const blob = new Blob([js], { type: 'application/javascript' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'images-data.js';
+  const a = document.createElement('a');
+  a.href = url; a.download = 'images-data.js';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
-  alert('已下载 images-data.js\n\n把它上传到你的网站根目录（和 index.html 放在一起），\n别人打开网站就能看到这些图片了。');
-});
+  alert('已下载 images-data.js\n\n上传到网站根目录即可让所有人看到图片。');
+}
 
 /* ============================================================
-   ③ 导出图片
+   ⑧ 导出图片
    ============================================================ */
-async function exportImage() {
+async function exportImage(){
   if (!state.setlist.length) { alert('请先选择曲目'); return; }
 
-  const btn = el.btnExport;
-  const oldText = btn.textContent;
-  btn.textContent = '生成中…';
-  btn.disabled = true;
+  const btns = [$('mBtnExport'), $('dBtnExport')].filter(Boolean);
+  const oldTexts = btns.map(b => b.textContent);
+  btns.forEach(b => { b.disabled = true; b.textContent = '生成中…'; });
 
   try {
     const tasks = [];
@@ -834,12 +1622,11 @@ async function exportImage() {
     console.error(err);
     alert('导出失败：' + (err && err.message ? err.message : '未知错误'));
   } finally {
-    btn.textContent = oldText;
-    btn.disabled = false;
+    btns.forEach((b, i) => { b.disabled = false; b.textContent = oldTexts[i]; });
   }
 }
 
-function drawAndDownload() {
+function drawAndDownload(){
   try {
     const W = 1080, PAD = 72;
     const CARD_PAD = 24, HEAD_ROW = 96, COLS = 3;
@@ -857,20 +1644,14 @@ function drawAndDownload() {
     });
     const H = HEADER_H + bodyH + URL_H + FOOTER_H;
 
-    /* ===== 自动计算安全缩放 ===== */
-    /* 浏览器 Canvas 上限约 16384px，我们保守用 8000px
-       保证在各种浏览器和手机上都能稳定导出 */
-    const MAX_PIXEL = 8000;
     let scale = 2;
-    if (H * scale > MAX_PIXEL) {
-      scale = MAX_PIXEL / H;
-    }
-    if (W * scale > MAX_PIXEL) {
-      scale = Math.min(scale, MAX_PIXEL / W);
-    }
-    /* 最低不低于 0.5，避免字太小看不清 */
-    scale = Math.max(0.5, scale);
-    /* 收敛到 0.05 的倍数，避免奇怪的浮点尺寸 */
+    if (H > 2000) scale = 1.5;
+    if (H > 3500) scale = 1;
+    if (H > 6000) scale = 0.75;
+    const MAX_PIXEL = 6000;
+    if (H * scale > MAX_PIXEL) scale = MAX_PIXEL / H;
+    if (W * scale > MAX_PIXEL) scale = Math.min(scale, MAX_PIXEL / W);
+    scale = Math.max(0.6, scale);
     scale = Math.round(scale * 20) / 20;
 
     const canvas = document.createElement('canvas');
@@ -905,12 +1686,12 @@ function drawAndDownload() {
     }
     ctx.restore();
 
-    /* SETLIST 小字 */
+    /* SETLIST */
     ctx.font = '900 22px ' + FONT;
     ctx.fillStyle = '#ccff00';
     ctx.fillText('S E T L I S T', PAD, 100);
 
-    /* 大标题 */
+    /* 标题 */
     const titleFont = '900 72px ' + FONT;
     const title = (CONFIG.title || '').trim() || 'NCT 公演';
     ctx.font = titleFont;
@@ -1071,23 +1852,14 @@ function drawAndDownload() {
       ctx.fillText(footText, W - PAD - fw, y + 46);
     }
 
-    /* ===== 导出（先 PNG，失败再 JPEG） ===== */
+    /* 导出 */
     let dataUrl = '';
-    try {
-      dataUrl = canvas.toDataURL('image/png');
-    } catch (e) {
-      dataUrl = '';
+    try { dataUrl = canvas.toDataURL('image/png'); } catch(e){ dataUrl = ''; }
+    if (!dataUrl || dataUrl.length < 100) {
+      try { dataUrl = canvas.toDataURL('image/jpeg', 0.92); } catch(e){ dataUrl = ''; }
     }
     if (!dataUrl || dataUrl.length < 100) {
-      /* PNG 失败，尝试 JPEG */
-      try {
-        dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-      } catch (e) {
-        dataUrl = '';
-      }
-    }
-    if (!dataUrl || dataUrl.length < 100) {
-      alert('导出失败：内容太多，浏览器无法生成图片。\n\n请减少曲目数量，或减少每首曲目的成员数量后重试。');
+      alert('导出失败：内容太多。请减少曲目或成员数量。');
       return;
     }
 
@@ -1103,12 +1875,11 @@ function drawAndDownload() {
     alert('导出出错：' + (err && err.message ? err.message : '未知错误'));
   }
 }
-el.btnExport.addEventListener('click', exportImage);
 
 /* ============================================================
-   ④ 启动
+   ⑨ 启动
    ============================================================ */
-function loadDefaultImages() {
+function loadDefaultImages(){
   return new Promise(resolve => {
     const script = document.createElement('script');
     script.src = 'images-data.js';
@@ -1118,7 +1889,7 @@ function loadDefaultImages() {
   });
 }
 
-(async function init() {
+(async function init(){
   try {
     await loadDefaultImages();
 
@@ -1141,12 +1912,24 @@ function loadDefaultImages() {
     state.songImages = Object.assign({}, DEFAULT_SONG_IMAGES, window.DEFAULT_SONG_IMAGES || {}, state.songImages);
     state.memberImages = Object.assign({}, DEFAULT_MEMBER_IMAGES, window.DEFAULT_MEMBER_IMAGES || {}, state.memberImages);
 
-    renderTeamFilter();
+    /* 初始移动端标签 */
+    if (isMobile()) {
+      mTabSongs.classList.add('active');
+      mTabMembers.classList.remove('active');
+    }
+
     renderAll();
-  } catch (err) {
+  } catch(err) {
     console.error('初始化失败：', err);
   }
 })();
+
+/* 窗口尺寸变化时重渲染 */
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderAll, 150);
+});
 </script>
 </body>
 </html>
