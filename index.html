@@ -27,7 +27,7 @@
   }
 
   /* ==================================================
-     移动端布局（默认显示，桌面用媒体查询隐藏）
+     移动端
      ================================================== */
   .mobile-ui {
     display: flex;
@@ -37,10 +37,9 @@
     overflow: hidden;
   }
 
-  /* --- 顶栏 --- */
   .m-header {
     flex: none;
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 8px;
     padding: 10px 14px;
     padding-top: calc(10px + env(safe-area-inset-top));
     border-bottom: 1px solid #1a1a1a;
@@ -78,13 +77,57 @@
   .m-icon-btn.primary {
     background: var(--neon); border-color: var(--neon); color: #000;
   }
+  .m-icon-btn:disabled {
+    opacity: 0.5; cursor: wait;
+  }
 
-  /* --- 预览区 --- */
+  /* 当前曲目条 */
+  .m-current-bar {
+    flex: none;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: #0d0d0d;
+    border-bottom: 1px solid #1a1a1a;
+    font-size: 12px;
+  }
+  .m-current-label {
+    color: #666;
+    font-weight: 600;
+    flex: none;
+  }
+  .m-current-name {
+    color: var(--neon);
+    font-weight: 800;
+    flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .m-current-name.empty {
+    color: #444;
+    font-weight: 600;
+  }
+  .m-current-limit {
+    font-size: 10px;
+    font-weight: 800;
+    color: #888;
+    background: #1a1a1a;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex: none;
+  }
+  .m-current-limit.reached {
+    color: #ff6666;
+    background: rgba(255, 68, 68, 0.15);
+  }
+  .m-current-limit.empty {
+    display: none;
+  }
+
+  /* 预览区 */
   .m-preview {
     flex: none;
-    height: 30vh;
-    min-height: 140px;
-    max-height: 260px;
+    height: 28vh;
+    min-height: 130px;
+    max-height: 240px;
     border-bottom: 1px solid #1a1a1a;
     background: #0d0d0d;
     overflow-y: auto;
@@ -169,8 +212,15 @@
     padding: 2px 7px;
     border-radius: 999px;
   }
+  .m-pv-count.limited {
+    background: #ffcc00;
+  }
+  .m-pv-count.reached {
+    background: #ff4444;
+    color: #fff;
+  }
 
-  /* --- 标签栏 --- */
+  /* 标签栏 */
   .m-tabs {
     flex: none;
     display: flex;
@@ -198,7 +248,7 @@
     box-shadow: 0 0 12px var(--neon-glow);
   }
 
-  /* --- 搜索 / 筛选 --- */
+  /* 搜索 / 筛选 */
   .m-controls {
     flex: none;
     padding: 8px 12px;
@@ -261,7 +311,7 @@
     color: #000;
   }
 
-  /* --- 列表 --- */
+  /* 列表 */
   .m-list {
     flex: 1;
     overflow-y: auto;
@@ -290,6 +340,10 @@
     border-color: var(--neon);
     background: rgba(204, 255, 0, 0.12);
   }
+  .m-item.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
   .m-item-thumb {
     width: 40px; height: 40px; flex: none;
     border-radius: 7px;
@@ -311,6 +365,7 @@
   .m-item-tags {
     display: flex; gap: 3px; margin-top: 3px;
     align-items: center;
+    flex-wrap: wrap;
   }
   .m-tag {
     font-size: 8.5px; font-weight: 800;
@@ -324,6 +379,11 @@
   .m-tag.t-dream { border-color: #00ccff; color: #33ddff; }
   .m-tag.t-wayv { border-color: #ffaa00; color: #ffcc33; }
   .m-tag.t-wish { border-color: #ff66cc; color: #ff99dd; }
+  .m-tag.limit-tag {
+    border-color: #ffcc00;
+    color: #ffcc00;
+    background: rgba(255, 204, 0, 0.08);
+  }
 
   .m-item-badge {
     flex: none;
@@ -359,7 +419,7 @@
   }
 
   /* ==================================================
-     桌面端布局
+     桌面端
      ================================================== */
   .desktop-ui { display: none; }
 
@@ -372,7 +432,6 @@
     }
   }
 
-  /* 桌面端样式（沿用之前的） */
   .d-hero {
     background: #000;
     display: flex; justify-content: center; align-items: center;
@@ -413,6 +472,7 @@
     letter-spacing: 0.5px;
   }
   .d-btn:hover { border-color: var(--neon); color: var(--neon); }
+  .d-btn:disabled { opacity: 0.5; cursor: wait; }
   .d-btn.primary {
     background: var(--neon); border-color: var(--neon);
     color: #000; font-weight: 800;
@@ -455,6 +515,11 @@
     border-radius: 4px;
     border: 1px solid var(--neon-dim);
     white-space: nowrap;
+  }
+  .d-counter.reached {
+    color: #ff6666;
+    border-color: #ff6666;
+    background: rgba(255, 68, 68, 0.1);
   }
   .d-mini {
     padding: 4px 9px;
@@ -542,6 +607,7 @@
     box-shadow: 0 0 12px var(--neon-glow);
   }
   .d-item.in-current { background: rgba(204, 255, 0, 0.15); border-color: var(--neon); }
+  .d-item.disabled { opacity: 0.35; cursor: not-allowed; }
 
   .d-item-thumb {
     width: 40px; height: 40px; flex: none;
@@ -564,7 +630,7 @@
   }
   .d-item.selected .d-item-name,
   .d-item.in-current .d-item-name { color: var(--neon); }
-  .d-item-tags { display: flex; gap: 3px; margin-top: 2px; }
+  .d-item-tags { display: flex; gap: 3px; margin-top: 2px; flex-wrap: wrap; }
   .d-tag {
     font-size: 8.5px; font-weight: 800;
     padding: 1px 5px;
@@ -577,6 +643,11 @@
   .d-tag.t-dream { border-color: #00ccff; color: #33ddff; }
   .d-tag.t-wayv { border-color: #ffaa00; color: #ffcc33; }
   .d-tag.t-wish { border-color: #ff66cc; color: #ff99dd; }
+  .d-tag.limit-tag {
+    border-color: #ffcc00;
+    color: #ffcc00;
+    background: rgba(255, 204, 0, 0.08);
+  }
 
   .d-badge {
     flex: none;
@@ -646,6 +717,7 @@
     letter-spacing: 2px;
     margin-bottom: 3px;
   }
+  .d-card-idx.reached { color: #ff6666; }
   .d-card-name {
     font-size: 15px; font-weight: 800;
     line-height: 1.3;
@@ -732,7 +804,6 @@
   }
   .d-preview-empty strong { color: var(--neon); }
 
-  /* 桌面端触屏上的删除按钮常驻 */
   @media (hover: none) {
     .d-member .d-member-del { display: grid; }
   }
@@ -753,11 +824,17 @@
     <button class="m-icon-btn primary" id="mBtnExport" title="导出图片">⬇</button>
   </header>
 
+  <div class="m-current-bar">
+    <span class="m-current-label">当前曲目</span>
+    <span class="m-current-name empty" id="mCurrentName">未选择</span>
+    <span class="m-current-limit empty" id="mCurrentLimit"></span>
+  </div>
+
   <div class="m-preview" id="mPreview"></div>
 
   <div class="m-tabs">
-    <button class="m-tab active" data-tab="songs" id="mTabSongs">曲目池</button>
-    <button class="m-tab" data-tab="members" id="mTabMembers">成员池</button>
+    <button class="m-tab active" data-tab="songs" id="mTabSongs">① 选曲目</button>
+    <button class="m-tab" data-tab="members" id="mTabMembers">② 选成员</button>
   </div>
 
   <div class="m-controls">
@@ -837,28 +914,65 @@ const CONFIG = {
   subtitle: '～10TH ANNIVERSARY～',
   team: 'NCT',
   date: '2026',
-  url: 'https://glacier126.github.io/NCTNATION'
+  url: 'https://你的网址.github.io'
 };
 
 const SONG_POOL = [
-  { title: 'Intro: Neo Got My Back' }, { title: 'Boss' }, { title: "Baby Don't Stop" },
-  { title: 'Go' }, { title: 'Touch' }, { title: 'Yestoday' }, { title: 'Black on Black' },
-  { title: 'Timeless' }, { title: '第七感 (The 7th Sense)' }, { title: 'Without You' },
-  { title: 'Without You (Chinese Ver.)' }, { title: '梦中梦 (몽중몽)' },
-  { title: 'Make A Wish (Birthday Song)' }, { title: 'Misfit' }, { title: 'Volcano' },
-  { title: '白炽灯 (Light Bulb)' }, { title: 'Dancing In The Rain' },
-  { title: 'Interlude: Past to Present' }, { title: '舞代路 (Déjà Vu)' }, { title: '月之迷 (Nectar)' },
-  { title: 'Music, Dance' }, { title: 'Faded In My Last Song' }, { title: 'From Home' },
-  { title: 'From Home (Korean Ver.)' }, { title: "90's Love" }, { title: 'Raise The Roof' },
-  { title: 'My Everything' }, { title: 'Interlude: Present to Future' }, { title: 'Work It' },
-  { title: 'All About You' }, { title: 'I.O.U' }, { title: 'Outro: Dream Routine' },
-  { title: 'New Axis' }, { title: "Universe (Let's Play Ball)" }, { title: 'Earthquake' },
-  { title: 'OK!' }, { title: 'Birthday Party' }, { title: 'Know Now' }, { title: 'Dreaming' },
-  { title: 'Round&Round' }, { title: 'Miracle' }, { title: 'Vroom' }, { title: 'Sweet Dream' },
-  { title: '星夜 (Good Night)' }, { title: 'Beautiful' }, { title: 'Baggy Jeans' },
-  { title: 'Call D' }, { title: 'PADO' }, { title: 'Interlude: Oasis' }, { title: 'The BAT' },
-  { title: 'Alley Oop' }, { title: "That's Not Fair" }, { title: 'Kangaroo' },
-  { title: 'Not Your Fault' }, { title: 'Golden Age' }
+  { title: 'Intro: Neo Got My Back' },
+  { title: 'Boss' },
+  { title: "Baby Don't Stop" },
+  { title: 'Go' },
+  { title: 'Touch' },
+  { title: 'Yestoday' },
+  { title: 'Black on Black' },
+  { title: 'Timeless' },
+  { title: '第七感 (The 7th Sense)', limit: 5 },
+  { title: 'Without You' },
+  { title: 'Without You (Chinese Ver.)' },
+  { title: '梦中梦 (몽중몽)' },
+  { title: 'Make A Wish (Birthday Song)', limit: 7 },
+  { title: 'Misfit' },
+  { title: 'Volcano' },
+  { title: '白炽灯 (Light Bulb)' },
+  { title: 'Dancing In The Rain' },
+  { title: 'Interlude: Past to Present' },
+  { title: '舞代路 (Déjà Vu)' },
+  { title: '月之迷 (Nectar)' },
+  { title: 'Music, Dance' },
+  { title: 'Faded In My Last Song' },
+  { title: 'From Home' },
+  { title: 'From Home (Korean Ver.)' },
+  { title: "90's Love", limit: 7 },
+  { title: 'Raise The Roof' },
+  { title: 'My Everything' },
+  { title: 'Interlude: Present to Future' },
+  { title: 'Work It', limit: 7 },
+  { title: 'All About You' },
+  { title: 'I.O.U' },
+  { title: 'Outro: Dream Routine' },
+  { title: 'New Axis', limit: 3 },
+  { title: "Universe (Let's Play Ball)", limit: 9 },
+  { title: 'Earthquake' },
+  { title: 'OK!' },
+  { title: 'Birthday Party' },
+  { title: 'Know Now' },
+  { title: 'Dreaming' },
+  { title: 'Round&Round' },
+  { title: 'Miracle' },
+  { title: 'Vroom' },
+  { title: 'Sweet Dream' },
+  { title: '星夜 (Good Night)' },
+  { title: 'Beautiful' },
+  { title: 'Baggy Jeans', limit: 5 },
+  { title: 'Call D' },
+  { title: 'PADO' },
+  { title: 'Interlude: Oasis' },
+  { title: 'The BAT' },
+  { title: 'Alley Oop' },
+  { title: "That's Not Fair" },
+  { title: 'Kangaroo' },
+  { title: 'Not Your Fault' },
+  { title: 'Golden Age' }
 ];
 
 const TEAMS = [
@@ -941,7 +1055,7 @@ const DEFAULT_MEMBER_IMAGES = {
    ② 状态与工具
    ============================================================ */
 const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
-const STORAGE_KEY = 'nct-setlist-picker-v8';
+const STORAGE_KEY = 'nct-setlist-picker-v9';
 
 const state = { setlist: [], activeIndex: -1, songImages: {}, memberImages: {} };
 let currentTeam = 'all';
@@ -974,7 +1088,6 @@ function fitText(ctx, text, maxWidth, font){
   return text.slice(0,lo)+'…';
 }
 
-/* 图片加载缓存 */
 const imgCache = new Map();
 function loadImage(src){
   if (!src) return Promise.resolve(null);
@@ -1013,7 +1126,6 @@ function readImageFile(file, maxSize){
   });
 }
 
-/* 全局文件选择器 */
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = 'image/*';
@@ -1040,7 +1152,6 @@ function openImagePicker(type, index){
   fileInput.click();
 }
 
-/* 存储 */
 function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
 function load(){
   try {
@@ -1058,8 +1169,15 @@ function load(){
 }
 
 /* ============================================================
-   ③ 通用状态操作
+   ③ 状态操作
    ============================================================ */
+function isMobile(){ return window.matchMedia('(max-width: 819px)').matches; }
+
+function getSongLimit(songIndex){
+  const song = SONG_POOL[songIndex];
+  return song && song.limit ? song.limit : Infinity;
+}
+
 function selectSong(index){
   const pos = state.setlist.findIndex(it => it.song === index);
   if (pos >= 0) {
@@ -1068,15 +1186,36 @@ function selectSong(index){
     state.setlist.push({ song: index, members: [] });
     state.activeIndex = state.setlist.length - 1;
   }
-  save(); renderAll();
+  save();
+  /* 移动端选完歌自动切到成员池 */
+  if (isMobile()) {
+    mobileTab = 'members';
+    const tabS = $('mTabSongs'), tabM = $('mTabMembers');
+    if (tabS && tabM) {
+      tabS.classList.remove('active');
+      tabM.classList.add('active');
+    }
+    const s = $('mSearch');
+    if (s) s.value = '';
+  }
+  renderAll();
 }
 
 function toggleMember(index){
   const target = state.setlist[state.activeIndex];
   if (!target) { alert('请先选择一首曲目'); return; }
   const pos = target.members.indexOf(index);
-  if (pos >= 0) target.members.splice(pos, 1);
-  else target.members.push(index);
+  if (pos >= 0) {
+    target.members.splice(pos, 1);
+  } else {
+    const limit = getSongLimit(target.song);
+    if (target.members.length >= limit) {
+      const song = SONG_POOL[target.song];
+      alert('「' + song.title + '」最多只能选 ' + limit + ' 人');
+      return;
+    }
+    target.members.push(index);
+  }
   save(); renderAll();
 }
 
@@ -1107,24 +1246,41 @@ function clearAll(){
 /* ============================================================
    ④ 移动端渲染
    ============================================================ */
-const mobileUI = $('mobileUI');
-const mPreview = $('mPreview');
-const mList = $('mList');
-const mSearch = $('mSearch');
-const mFilters = $('mFilters');
-const mTabSongs = $('mTabSongs');
-const mTabMembers = $('mTabMembers');
-
-function isMobile(){ return window.matchMedia('(max-width: 819px)').matches; }
-
 function renderMobile(){
   if (!isMobile()) return;
+  renderMobileCurrentBar();
   renderMobilePreview();
   renderMobileControls();
   renderMobileList();
 }
 
+function renderMobileCurrentBar(){
+  const item = state.setlist[state.activeIndex];
+  const nameEl = $('mCurrentName');
+  const limitEl = $('mCurrentLimit');
+  if (!item) {
+    nameEl.textContent = '未选择';
+    nameEl.className = 'm-current-name empty';
+    limitEl.textContent = '';
+    limitEl.className = 'm-current-limit empty';
+    return;
+  }
+  const song = SONG_POOL[item.song];
+  nameEl.className = 'm-current-name';
+  if (song && song.limit) {
+    nameEl.textContent = song.title;
+    limitEl.textContent = item.members.length + ' / ' + song.limit;
+    limitEl.className = 'm-current-limit' +
+      (item.members.length >= song.limit ? ' reached' : '');
+  } else {
+    nameEl.textContent = song ? song.title : '';
+    limitEl.textContent = item.members.length + ' 人';
+    limitEl.className = 'm-current-limit';
+  }
+}
+
 function renderMobilePreview(){
+  const mPreview = $('mPreview');
   if (!state.setlist.length) {
     mPreview.innerHTML =
       '<div class="m-preview-empty">' +
@@ -1139,6 +1295,7 @@ function renderMobilePreview(){
     if (!song) return;
     const songImg = state.songImages[item.song];
     const active = si === state.activeIndex;
+    const limit = song.limit;
 
     let avatars = '';
     const showMax = 6;
@@ -1148,7 +1305,7 @@ function renderMobilePreview(){
       const mImg = state.memberImages[mi];
       avatars +=
         '<span class="m-pv-avatar">' +
-          (mImg ? '<img src="' + mImg + '" alt="">' : esc((name||'?').charAt(0))) +
+          (mImg ? '<img src="' + mImg + '" alt="" loading="lazy">' : esc((name||'?').charAt(0))) +
         '</span>';
     });
     if (item.members.length > showMax) {
@@ -1158,21 +1315,29 @@ function renderMobilePreview(){
       avatars = '<span class="m-pv-none">未选成员</span>';
     }
 
+    let countClass = 'm-pv-count';
+    if (limit) {
+      countClass += ' limited';
+      if (item.members.length >= limit) countClass += ' reached';
+    }
+    const countText = limit
+      ? item.members.length + '/' + limit
+      : String(item.members.length);
+
     html +=
       '<div class="m-pv-song' + (active ? ' active' : '') + '" data-si="' + si + '">' +
         '<div class="m-pv-thumb">' +
-          (songImg ? '<img src="' + songImg + '" alt="">' : '♪') +
+          (songImg ? '<img src="' + songImg + '" alt="" loading="lazy">' : '♪') +
         '</div>' +
         '<div class="m-pv-body">' +
           '<div class="m-pv-name">' + pad2(si+1) + '. ' + esc(song.title) + '</div>' +
           '<div class="m-pv-members">' + avatars + '</div>' +
         '</div>' +
-        '<div class="m-pv-count">' + item.members.length + '</div>' +
+        '<div class="' + countClass + '">' + countText + '</div>' +
       '</div>';
   });
   mPreview.innerHTML = html;
 
-  // 自动滚动到当前曲目
   const activeEl = mPreview.querySelector('.m-pv-song.active');
   if (activeEl) {
     const containerTop = mPreview.scrollTop;
@@ -1186,6 +1351,8 @@ function renderMobilePreview(){
 }
 
 function renderMobileControls(){
+  const mSearch = $('mSearch');
+  const mFilters = $('mFilters');
   mSearch.placeholder = mobileTab === 'songs' ? '搜索曲目…' : '搜索成员…';
 
   if (mobileTab === 'members') {
@@ -1200,6 +1367,9 @@ function renderMobileControls(){
 }
 
 function renderMobileList(){
+  const mList = $('mList');
+  const mSearch = $('mSearch');
+
   if (mobileTab === 'songs') {
     const q = mSearch.value.trim().toLowerCase();
     const frag = document.createDocumentFragment();
@@ -1214,6 +1384,11 @@ function renderMobileList(){
       const active = selected && listPos === state.activeIndex;
       const img = state.songImages[i];
 
+      let tags = '';
+      if (song.limit) {
+        tags += '<span class="m-tag limit-tag">限' + song.limit + '人</span>';
+      }
+
       const div = document.createElement('div');
       div.className = 'm-item' + (selected ? ' selected' : '') + (active ? ' in-current' : '');
       div.dataset.songIndex = i;
@@ -1223,6 +1398,7 @@ function renderMobileList(){
         '</div>' +
         '<div class="m-item-body">' +
           '<div class="m-item-name">' + esc(song.title) + '</div>' +
+          (tags ? '<div class="m-item-tags">' + tags + '</div>' : '') +
         '</div>' +
         (selected
           ? '<div class="m-item-badge">' + pad2(listPos+1) + '</div>'
@@ -1240,6 +1416,8 @@ function renderMobileList(){
     let shown = 0;
     const target = state.setlist[state.activeIndex];
     const inCurrent = target ? target.members : [];
+    const limit = target ? getSongLimit(target.song) : Infinity;
+    const isFull = target && target.members.length >= limit;
 
     MEMBER_POOL.forEach((member, i) => {
       if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
@@ -1248,13 +1426,15 @@ function renderMobileList(){
 
       const img = state.memberImages[i];
       const isIn = inCurrent.includes(i);
+      const disabled = isFull && !isIn;
+
       const teamTags = member.teams.map(t => {
         const info = TEAMS.find(x => x.key === t);
         return '<span class="m-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
       }).join('');
 
       const div = document.createElement('div');
-      div.className = 'm-item' + (isIn ? ' in-current' : '');
+      div.className = 'm-item' + (isIn ? ' in-current' : '') + (disabled ? ' disabled' : '');
       div.dataset.memberIndex = i;
       div.innerHTML =
         '<div class="m-item-thumb">' +
@@ -1275,66 +1455,74 @@ function renderMobileList(){
 }
 
 /* --- 移动端事件 --- */
-mPreview.addEventListener('click', e => {
-  const el = e.target.closest('.m-pv-song');
-  if (!el) return;
-  state.activeIndex = Number(el.dataset.si);
-  save(); renderAll();
-});
+function bindMobileEvents(){
+  const mPreview = $('mPreview');
+  const mList = $('mList');
+  const mSearch = $('mSearch');
+  const mFilters = $('mFilters');
+  const mTabSongs = $('mTabSongs');
+  const mTabMembers = $('mTabMembers');
 
-mList.addEventListener('click', e => {
-  const item = e.target.closest('.m-item');
-  if (!item) return;
-  if (item.dataset.songIndex !== undefined) {
-    selectSong(Number(item.dataset.songIndex));
-  } else if (item.dataset.memberIndex !== undefined) {
-    toggleMember(Number(item.dataset.memberIndex));
-  }
-});
+  mPreview.addEventListener('click', e => {
+    const el = e.target.closest('.m-pv-song');
+    if (!el) return;
+    state.activeIndex = Number(el.dataset.si);
+    save();
+    /* 切换到成员池方便继续选 */
+    mobileTab = 'members';
+    mTabSongs.classList.remove('active');
+    mTabMembers.classList.add('active');
+    mSearch.value = '';
+    renderAll();
+  });
 
-mSearch.addEventListener('input', renderMobileList);
+  mList.addEventListener('click', e => {
+    const item = e.target.closest('.m-item');
+    if (!item) return;
+    if (item.classList.contains('disabled')) return;
+    if (item.dataset.songIndex !== undefined) {
+      selectSong(Number(item.dataset.songIndex));
+    } else if (item.dataset.memberIndex !== undefined) {
+      toggleMember(Number(item.dataset.memberIndex));
+    }
+  });
 
-mFilters.addEventListener('click', e => {
-  const btn = e.target.closest('.m-filter');
-  if (!btn) return;
-  currentTeam = btn.dataset.team;
-  renderMobileControls();
-  renderMobileList();
-});
+  mSearch.addEventListener('input', renderMobileList);
 
-mTabSongs.addEventListener('click', () => {
-  mobileTab = 'songs';
-  mTabSongs.classList.add('active');
-  mTabMembers.classList.remove('active');
-  mSearch.value = '';
-  renderMobileControls();
-  renderMobileList();
-});
+  mFilters.addEventListener('click', e => {
+    const btn = e.target.closest('.m-filter');
+    if (!btn) return;
+    currentTeam = btn.dataset.team;
+    renderMobileControls();
+    renderMobileList();
+  });
 
-mTabMembers.addEventListener('click', () => {
-  mobileTab = 'members';
-  mTabMembers.classList.add('active');
-  mTabSongs.classList.remove('active');
-  mSearch.value = '';
-  renderMobileControls();
-  renderMobileList();
-});
+  mTabSongs.addEventListener('click', () => {
+    mobileTab = 'songs';
+    mTabSongs.classList.add('active');
+    mTabMembers.classList.remove('active');
+    mSearch.value = '';
+    renderMobileControls();
+    renderMobileList();
+  });
 
-$('mBtnClear').addEventListener('click', clearAll);
-$('mBtnExport').addEventListener('click', exportImage);
-$('mBtnExportData').addEventListener('click', exportImageData);
+  mTabMembers.addEventListener('click', () => {
+    mobileTab = 'members';
+    mTabMembers.classList.add('active');
+    mTabSongs.classList.remove('active');
+    mSearch.value = '';
+    renderMobileControls();
+    renderMobileList();
+  });
+
+  $('mBtnClear').addEventListener('click', clearAll);
+  $('mBtnExport').addEventListener('click', exportImage);
+  $('mBtnExportData').addEventListener('click', exportImageData);
+}
 
 /* ============================================================
    ⑤ 桌面端渲染
    ============================================================ */
-const dSongList = $('dSongList');
-const dMemberList = $('dMemberList');
-const dPreview = $('dPreview');
-const dSongSearch = $('dSongSearch');
-const dMemberSearch = $('dMemberSearch');
-const dTeamFilter = $('dTeamFilter');
-const dHint = $('dHint');
-
 function renderDesktop(){
   if (isMobile()) return;
   renderDesktopSongList();
@@ -1345,6 +1533,7 @@ function renderDesktop(){
 }
 
 function renderDesktopTeams(){
+  const dTeamFilter = $('dTeamFilter');
   dTeamFilter.innerHTML = TEAMS.map(t =>
     '<button class="d-team' + (currentTeam === t.key ? ' active' : '') +
     '" data-team="' + t.key + '">' + esc(t.label) + '</button>'
@@ -1352,9 +1541,12 @@ function renderDesktopTeams(){
 }
 
 function renderDesktopSongList(){
+  const dSongList = $('dSongList');
+  const dSongSearch = $('dSongSearch');
   const q = dSongSearch.value.trim().toLowerCase();
   const frag = document.createDocumentFragment();
   let shown = 0;
+
   SONG_POOL.forEach((song, i) => {
     if (q && !song.title.toLowerCase().includes(q)) return;
     shown++;
@@ -1363,6 +1555,11 @@ function renderDesktopSongList(){
     const active = selected && listPos === state.activeIndex;
     const img = state.songImages[i];
 
+    let tags = '';
+    if (song.limit) {
+      tags += '<span class="d-tag limit-tag">限' + song.limit + '人</span>';
+    }
+
     const div = document.createElement('div');
     div.className = 'd-item' + (selected ? ' selected' : '') + (active ? ' active' : '');
     div.dataset.songIndex = i;
@@ -1370,7 +1567,10 @@ function renderDesktopSongList(){
       '<div class="d-item-thumb' + (img ? ' has-img' : '') + '" data-act="img">' +
         (img ? '<img src="' + img + '" alt="">' : '+') +
       '</div>' +
-      '<div class="d-item-body"><div class="d-item-name">' + esc(song.title) + '</div></div>' +
+      '<div class="d-item-body">' +
+        '<div class="d-item-name">' + esc(song.title) + '</div>' +
+        (tags ? '<div class="d-item-tags">' + tags + '</div>' : '') +
+      '</div>' +
       (selected ? '<div class="d-badge">' + pad2(listPos+1) + '</div>' : '');
     frag.appendChild(div);
   });
@@ -1381,11 +1581,15 @@ function renderDesktopSongList(){
 }
 
 function renderDesktopMemberList(){
+  const dMemberList = $('dMemberList');
+  const dMemberSearch = $('dMemberSearch');
   const q = dMemberSearch.value.trim().toLowerCase();
   const frag = document.createDocumentFragment();
   let shown = 0;
   const target = state.setlist[state.activeIndex];
   const inCurrent = target ? target.members : [];
+  const limit = target ? getSongLimit(target.song) : Infinity;
+  const isFull = target && target.members.length >= limit;
 
   MEMBER_POOL.forEach((member, i) => {
     if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
@@ -1394,13 +1598,15 @@ function renderDesktopMemberList(){
 
     const img = state.memberImages[i];
     const isIn = inCurrent.includes(i);
+    const disabled = isFull && !isIn;
+
     const tags = member.teams.map(t => {
       const info = TEAMS.find(x => x.key === t);
       return '<span class="d-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
     }).join('');
 
     const div = document.createElement('div');
-    div.className = 'd-item' + (isIn ? ' in-current' : '');
+    div.className = 'd-item' + (isIn ? ' in-current' : '') + (disabled ? ' disabled' : '');
     div.dataset.memberIndex = i;
     div.innerHTML =
       '<div class="d-item-thumb' + (img ? ' has-img' : '') + '" data-act="img">' +
@@ -1418,10 +1624,18 @@ function renderDesktopMemberList(){
   else dMemberList.appendChild(frag);
 
   const count = target ? target.members.length : 0;
-  $('dMemberCounter').textContent = '已选 ' + count;
+  const counter = $('dMemberCounter');
+  if (target && limit !== Infinity) {
+    counter.textContent = count + ' / ' + limit;
+    counter.className = 'd-counter' + (count >= limit ? ' reached' : '');
+  } else {
+    counter.textContent = '已选 ' + count;
+    counter.className = 'd-counter';
+  }
 }
 
 function renderDesktopHint(){
+  const dHint = $('dHint');
   const item = state.setlist[state.activeIndex];
   if (!item) {
     dHint.className = 'd-hint warn';
@@ -1430,10 +1644,15 @@ function renderDesktopHint(){
   }
   dHint.className = 'd-hint';
   const song = SONG_POOL[item.song];
-  dHint.textContent = '正在为「' + (song ? song.title : '') + '」选成员（已选 ' + item.members.length + ' 人）';
+  const limit = song && song.limit;
+  let text = '正在为「' + (song ? song.title : '') + '」选成员（已选 ' + item.members.length;
+  if (limit) text += ' / ' + limit;
+  text += ' 人）';
+  dHint.textContent = text;
 }
 
 function renderDesktopPreview(){
+  const dPreview = $('dPreview');
   if (!state.setlist.length) {
     dPreview.innerHTML =
       '<div class="d-preview-empty">' +
@@ -1446,9 +1665,13 @@ function renderDesktopPreview(){
     const song = SONG_POOL[item.song];
     if (!song) return;
     const songImg = state.songImages[item.song];
+    const limit = song.limit;
     const card = document.createElement('div');
     card.className = 'd-card' + (si === state.activeIndex ? ' active' : '');
     card.dataset.si = si;
+
+    const reached = limit && item.members.length >= limit;
+    const idxText = pad2(si+1) + ' / ' + item.members.length + (limit ? '/' + limit : '') + ' 人';
 
     let html =
       '<div class="d-card-head">' +
@@ -1456,7 +1679,7 @@ function renderDesktopPreview(){
           (songImg ? '<img src="' + songImg + '" alt="" loading="lazy">' : '♪') +
         '</div>' +
         '<div class="d-card-info">' +
-          '<div class="d-card-idx">' + pad2(si+1) + ' / ' + item.members.length + ' 人</div>' +
+          '<div class="d-card-idx' + (reached ? ' reached' : '') + '">' + idxText + '</div>' +
           '<div class="d-card-name">' + esc(song.title) + '</div>' +
         '</div>' +
         '<button class="d-card-close" data-act="removesong">✕</button>' +
@@ -1489,86 +1712,98 @@ function renderDesktopPreview(){
   dPreview.appendChild(frag);
 }
 
-/* --- 桌面端事件 --- */
-dSongList.addEventListener('click', e => {
-  const item = e.target.closest('.d-item');
-  if (!item) return;
-  const index = Number(item.dataset.songIndex);
-  const imgBtn = e.target.closest('[data-act="img"]');
-  if (imgBtn) { e.stopPropagation(); openImagePicker('song', index); return; }
-  selectSong(index);
-});
+function bindDesktopEvents(){
+  const dSongList = $('dSongList');
+  const dMemberList = $('dMemberList');
+  const dPreview = $('dPreview');
+  const dSongSearch = $('dSongSearch');
+  const dMemberSearch = $('dMemberSearch');
+  const dTeamFilter = $('dTeamFilter');
 
-dMemberList.addEventListener('click', e => {
-  const item = e.target.closest('.d-item');
-  if (!item) return;
-  const index = Number(item.dataset.memberIndex);
-  const imgBtn = e.target.closest('[data-act="img"]');
-  if (imgBtn) { e.stopPropagation(); openImagePicker('member', index); return; }
-  toggleMember(index);
-});
-
-dPreview.addEventListener('click', e => {
-  const card = e.target.closest('.d-card');
-  if (!card) return;
-  const si = Number(card.dataset.si);
-  const act = e.target.closest('[data-act]');
-  if (act) {
-    const a = act.dataset.act;
-    if (a === 'removesong') { e.stopPropagation(); removeSong(si); return; }
-    if (a === 'removemember') {
-      e.stopPropagation();
-      removeMemberFromSong(si, Number(act.dataset.pos));
-      return;
-    }
-    if (a === 'songimg') {
-      e.stopPropagation();
-      const t = state.setlist[si];
-      if (t) openImagePicker('song', t.song);
-      return;
-    }
-  }
-  state.activeIndex = si;
-  save(); renderAll();
-});
-
-dSongSearch.addEventListener('input', renderDesktopSongList);
-dMemberSearch.addEventListener('input', renderDesktopMemberList);
-dTeamFilter.addEventListener('click', e => {
-  const btn = e.target.closest('.d-team');
-  if (!btn) return;
-  currentTeam = btn.dataset.team;
-  renderDesktopTeams();
-  renderDesktopMemberList();
-});
-
-$('dBtnSelectAll').addEventListener('click', () => {
-  const target = state.setlist[state.activeIndex];
-  if (!target) { alert('请先选择一首曲目'); return; }
-  const q = dMemberSearch.value.trim().toLowerCase();
-  MEMBER_POOL.forEach((m, i) => {
-    if (currentTeam !== 'all' && !m.teams.includes(currentTeam)) return;
-    if (q && !m.name.toLowerCase().includes(q)) return;
-    if (!target.members.includes(i)) target.members.push(i);
+  dSongList.addEventListener('click', e => {
+    const item = e.target.closest('.d-item');
+    if (!item) return;
+    const index = Number(item.dataset.songIndex);
+    const imgBtn = e.target.closest('[data-act="img"]');
+    if (imgBtn) { e.stopPropagation(); openImagePicker('song', index); return; }
+    selectSong(index);
   });
-  save(); renderAll();
-});
 
-$('dBtnClearMembers').addEventListener('click', () => {
-  const target = state.setlist[state.activeIndex];
-  if (!target) { alert('请先选择一首曲目'); return; }
-  if (!target.members.length) return;
-  if (!confirm('确定要移除该曲目的全部成员吗？')) return;
-  target.members = [];
-  save(); renderAll();
-});
+  dMemberList.addEventListener('click', e => {
+    const item = e.target.closest('.d-item');
+    if (!item) return;
+    if (item.classList.contains('disabled')) return;
+    const index = Number(item.dataset.memberIndex);
+    const imgBtn = e.target.closest('[data-act="img"]');
+    if (imgBtn) { e.stopPropagation(); openImagePicker('member', index); return; }
+    toggleMember(index);
+  });
 
-$('dBtnClear').addEventListener('click', clearAll);
-$('dBtnExport').addEventListener('click', exportImage);
-$('dBtnExportData').addEventListener('click', exportImageData);
+  dPreview.addEventListener('click', e => {
+    const card = e.target.closest('.d-card');
+    if (!card) return;
+    const si = Number(card.dataset.si);
+    const act = e.target.closest('[data-act]');
+    if (act) {
+      const a = act.dataset.act;
+      if (a === 'removesong') { e.stopPropagation(); removeSong(si); return; }
+      if (a === 'removemember') {
+        e.stopPropagation();
+        removeMemberFromSong(si, Number(act.dataset.pos));
+        return;
+      }
+      if (a === 'songimg') {
+        e.stopPropagation();
+        const t = state.setlist[si];
+        if (t) openImagePicker('song', t.song);
+        return;
+      }
+    }
+    state.activeIndex = si;
+    save(); renderAll();
+  });
+
+  dSongSearch.addEventListener('input', renderDesktopSongList);
+  dMemberSearch.addEventListener('input', renderDesktopMemberList);
+  dTeamFilter.addEventListener('click', e => {
+    const btn = e.target.closest('.d-team');
+    if (!btn) return;
+    currentTeam = btn.dataset.team;
+    renderDesktopTeams();
+    renderDesktopMemberList();
+  });
+
+  $('dBtnSelectAll').addEventListener('click', () => {
+    const target = state.setlist[state.activeIndex];
+    if (!target) { alert('请先选择一首曲目'); return; }
+    const limit = getSongLimit(target.song);
+    const q = dMemberSearch.value.trim().toLowerCase();
+    MEMBER_POOL.forEach((m, i) => {
+      if (currentTeam !== 'all' && !m.teams.includes(currentTeam)) return;
+      if (q && !m.name.toLowerCase().includes(q)) return;
+      if (target.members.includes(i)) return;
+      if (target.members.length >= limit) return;
+      target.members.push(i);
+    });
+    save(); renderAll();
+  });
+
+  $('dBtnClearMembers').addEventListener('click', () => {
+    const target = state.setlist[state.activeIndex];
+    if (!target) { alert('请先选择一首曲目'); return; }
+    if (!target.members.length) return;
+    if (!confirm('确定要移除该曲目的全部成员吗？')) return;
+    target.members = [];
+    save(); renderAll();
+  });
+
+  $('dBtnClear').addEventListener('click', clearAll);
+  $('dBtnExport').addEventListener('click', exportImage);
+  $('dBtnExportData').addEventListener('click', exportImageData);
+}
 
 /* ============================================================
-   ⑥ 统一渲染入口
+   ⑥ 统一渲染
    ============================================================ */
 function renderAll(){
   if (isMobile()) renderMobile();
@@ -1662,18 +1897,15 @@ function drawAndDownload(){
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
 
-    /* 背景 */
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, W, H);
 
-    /* 顶部荧光条 */
     const barGrad = ctx.createLinearGradient(0, 0, W, 0);
     barGrad.addColorStop(0, '#ccff00');
     barGrad.addColorStop(1, '#99ff33');
     ctx.fillStyle = barGrad;
     ctx.fillRect(0, 0, W, 8);
 
-    /* 斜线装饰 */
     ctx.save();
     ctx.globalAlpha = 0.06;
     ctx.strokeStyle = '#ccff00';
@@ -1686,19 +1918,16 @@ function drawAndDownload(){
     }
     ctx.restore();
 
-    /* SETLIST */
     ctx.font = '900 22px ' + FONT;
     ctx.fillStyle = '#ccff00';
     ctx.fillText('S E T L I S T', PAD, 100);
 
-    /* 标题 */
     const titleFont = '900 72px ' + FONT;
     const title = (CONFIG.title || '').trim() || 'NCT 公演';
     ctx.font = titleFont;
     ctx.fillStyle = '#ffffff';
     ctx.fillText(fitText(ctx, title, W - PAD * 2, titleFont), PAD, 180);
 
-    /* 元信息 */
     const meta = [CONFIG.team, CONFIG.date, CONFIG.subtitle]
       .map(s => (s || '').trim()).filter(Boolean).join('  ·  ');
     if (meta) {
@@ -1711,7 +1940,6 @@ function drawAndDownload(){
     ctx.fillStyle = 'rgba(204, 255, 0, 0.3)';
     ctx.fillRect(PAD, 275, W - PAD * 2, 1);
 
-    /* 曲目卡片 */
     const contentW = W - PAD * 2;
     const innerW = contentW - CARD_PAD * 2;
     const cellW = (innerW - (COLS - 1) * CELL_GAP) / COLS;
@@ -1758,7 +1986,7 @@ function drawAndDownload(){
       }
 
       const textX = ix + imgSize + 22;
-      const textMaxW = PAD + contentW - CARD_PAD - textX - 110;
+      const textMaxW = PAD + contentW - CARD_PAD - textX - 130;
 
       ctx.font = '900 22px ' + FONT;
       ctx.fillStyle = '#ccff00';
@@ -1769,9 +1997,13 @@ function drawAndDownload(){
       ctx.fillStyle = '#ffffff';
       ctx.fillText(fitText(ctx, song.title, textMaxW, nameFont), textX, y + CARD_PAD + 60);
 
-      const countText = item.members.length + ' 人';
+      const limit = song.limit;
+      const countText = limit
+        ? item.members.length + ' / ' + limit + ' 人'
+        : item.members.length + ' 人';
       ctx.font = '800 20px ' + FONT;
-      ctx.fillStyle = '#ccff00';
+      const reached = limit && item.members.length >= limit;
+      ctx.fillStyle = reached ? '#ff4444' : '#ccff00';
       const cw = ctx.measureText(countText).width;
       ctx.fillText(countText, PAD + contentW - CARD_PAD - cw, y + CARD_PAD + 26);
 
@@ -1828,7 +2060,6 @@ function drawAndDownload(){
       y += cardH + CARD_GAP;
     });
 
-    /* 底部 URL */
     const url = (CONFIG.url || '').trim();
     y += 20;
 
@@ -1852,7 +2083,6 @@ function drawAndDownload(){
       ctx.fillText(footText, W - PAD - fw, y + 46);
     }
 
-    /* 导出 */
     let dataUrl = '';
     try { dataUrl = canvas.toDataURL('image/png'); } catch(e){ dataUrl = ''; }
     if (!dataUrl || dataUrl.length < 100) {
@@ -1912,10 +2142,13 @@ function loadDefaultImages(){
     state.songImages = Object.assign({}, DEFAULT_SONG_IMAGES, window.DEFAULT_SONG_IMAGES || {}, state.songImages);
     state.memberImages = Object.assign({}, DEFAULT_MEMBER_IMAGES, window.DEFAULT_MEMBER_IMAGES || {}, state.memberImages);
 
-    /* 初始移动端标签 */
+    bindMobileEvents();
+    bindDesktopEvents();
+
     if (isMobile()) {
-      mTabSongs.classList.add('active');
-      mTabMembers.classList.remove('active');
+      const tabS = $('mTabSongs'), tabM = $('mTabMembers');
+      tabS.classList.add('active');
+      tabM.classList.remove('active');
     }
 
     renderAll();
@@ -1924,7 +2157,6 @@ function loadDefaultImages(){
   }
 })();
 
-/* 窗口尺寸变化时重渲染 */
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
