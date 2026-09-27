@@ -40,33 +40,33 @@
   .m-header {
     flex: none;
     display: flex; align-items: center; gap: 8px;
-    padding: 10px 14px;
-    padding-top: calc(10px + env(safe-area-inset-top));
+    padding: 8px 12px;
+    padding-top: calc(8px + env(safe-area-inset-top));
     border-bottom: 1px solid #1a1a1a;
     background: #0a0a0a;
   }
   .m-logo {
-    width: 32px; height: 32px; flex: none;
+    width: 30px; height: 30px; flex: none;
     display: grid; place-items: center;
     background: var(--neon); color: #000;
-    font-weight: 900; font-size: 15px;
+    font-weight: 900; font-size: 14px;
     border-radius: 6px;
     box-shadow: 0 0 14px var(--neon-glow);
   }
   .m-title {
     flex: 1;
-    font-size: 14px; font-weight: 800;
+    font-size: 13px; font-weight: 800;
     letter-spacing: 0.5px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .m-title span { color: var(--neon); }
   .m-icon-btn {
-    width: 34px; height: 34px; flex: none;
+    width: 32px; height: 32px; flex: none;
     background: #000; color: #ccc;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 7px;
     display: grid; place-items: center;
-    font-size: 15px; font-weight: 800;
+    font-size: 14px; font-weight: 800;
     cursor: pointer; padding: 0;
     font-family: inherit;
     transition: all .15s;
@@ -77,57 +77,66 @@
   .m-icon-btn.primary {
     background: var(--neon); border-color: var(--neon); color: #000;
   }
-  .m-icon-btn:disabled {
-    opacity: 0.5; cursor: wait;
-  }
+  .m-icon-btn:disabled { opacity: 0.5; cursor: wait; }
 
-  /* 当前曲目条 */
-  .m-current-bar {
+  /* 标签栏 —— 放在顶部，先选标签 */
+  .m-tabs {
     flex: none;
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 14px;
-    background: #0d0d0d;
+    display: flex;
+    padding: 8px 12px;
+    gap: 6px;
+    background: #0a0a0a;
     border-bottom: 1px solid #1a1a1a;
-    font-size: 12px;
   }
-  .m-current-label {
-    color: #666;
-    font-weight: 600;
-    flex: none;
-  }
-  .m-current-name {
-    color: var(--neon);
-    font-weight: 800;
+  .m-tab {
     flex: 1;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .m-current-name.empty {
-    color: #444;
-    font-weight: 600;
-  }
-  .m-current-limit {
-    font-size: 10px;
-    font-weight: 800;
+    padding: 10px 10px;
+    border: 1px solid var(--border);
+    background: #000;
     color: #888;
-    background: #1a1a1a;
-    padding: 3px 9px;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+    position: relative;
+  }
+  .m-tab.active {
+    background: var(--neon);
+    border-color: var(--neon);
+    color: #000;
+    box-shadow: 0 0 12px var(--neon-glow);
+  }
+  .m-tab .m-tab-badge {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 10px;
+    font-weight: 900;
+    background: rgba(0,0,0,0.15);
+    padding: 1px 6px;
     border-radius: 999px;
-    flex: none;
   }
-  .m-current-limit.reached {
-    color: #ff6666;
-    background: rgba(255, 68, 68, 0.15);
-  }
-  .m-current-limit.empty {
-    display: none;
+  .m-tab:not(.active) .m-tab-badge {
+    background: rgba(204, 255, 0, 0.15);
+    color: var(--neon);
   }
 
-  /* 预览区 */
+  /* ============== 曲目标签页内容 ============== */
+  .m-songs-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* 已选曲目预览区 —— 只在曲目标签显示 */
   .m-preview {
     flex: none;
-    height: 28vh;
-    min-height: 130px;
-    max-height: 240px;
+    height: 32vh;
+    min-height: 140px;
+    max-height: 280px;
     border-bottom: 1px solid #1a1a1a;
     background: #0d0d0d;
     overflow-y: auto;
@@ -149,11 +158,10 @@
 
   .m-pv-song {
     display: flex; align-items: center; gap: 8px;
-    padding: 7px 8px;
+    padding: 8px 8px;
     border-radius: 8px;
     border: 1px solid transparent;
     margin-bottom: 4px;
-    cursor: pointer;
     transition: all .15s;
     background: #141414;
   }
@@ -162,8 +170,13 @@
     background: rgba(204, 255, 0, 0.06);
     box-shadow: 0 0 12px var(--neon-glow);
   }
+  .m-pv-main {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1; min-width: 0;
+    cursor: pointer;
+  }
   .m-pv-thumb {
-    width: 32px; height: 32px; flex: none;
+    width: 34px; height: 34px; flex: none;
     border-radius: 5px;
     background: #222;
     display: grid; place-items: center;
@@ -211,61 +224,56 @@
     background: var(--neon);
     padding: 2px 7px;
     border-radius: 999px;
+    margin-right: 2px;
   }
-  .m-pv-count.limited {
-    background: #ffcc00;
-  }
-  .m-pv-count.reached {
-    background: #ff4444;
-    color: #fff;
-  }
+  .m-pv-count.limited { background: #ffcc00; }
+  .m-pv-count.reached { background: #ff4444; color: #fff; }
 
-  /* 标签栏 */
-  .m-tabs {
+  .m-pv-actions {
     flex: none;
     display: flex;
-    padding: 8px 12px 0;
-    gap: 6px;
-    background: #0a0a0a;
+    gap: 2px;
+    align-items: center;
   }
-  .m-tab {
-    flex: 1;
-    padding: 9px 10px;
-    border: 1px solid var(--border);
+  .m-pv-btn {
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    border: 1px solid #2a2a2a;
     background: #000;
     color: #888;
     font-size: 12px; font-weight: 800;
-    letter-spacing: 0.5px;
-    border-radius: 8px;
-    cursor: pointer;
+    display: grid; place-items: center;
+    cursor: pointer; padding: 0;
     font-family: inherit;
     transition: all .15s;
+    line-height: 1;
   }
-  .m-tab.active {
-    background: var(--neon);
+  .m-pv-btn:active {
     border-color: var(--neon);
-    color: #000;
-    box-shadow: 0 0 12px var(--neon-glow);
+    color: var(--neon);
+  }
+  .m-pv-btn.danger:active {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: #110000;
   }
 
-  /* 搜索 / 筛选 */
-  .m-controls {
+  /* 搜索栏 */
+  .m-search-bar {
     flex: none;
     padding: 8px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
     background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
   }
   .m-search-wrap { position: relative; }
   .m-search {
     width: 100%;
-    padding: 9px 12px 9px 32px;
+    padding: 10px 12px 10px 34px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 9px;
     background: #000;
     color: var(--text);
-    font-size: 13px;
+    font-size: 13.5px;
     font-family: inherit;
     outline: none;
     -webkit-appearance: none;
@@ -277,7 +285,7 @@
   }
   .m-search-icon {
     position: absolute;
-    left: 11px; top: 50%;
+    left: 12px; top: 50%;
     transform: translateY(-50%);
     color: #555; font-size: 13px;
     pointer-events: none;
@@ -286,17 +294,19 @@
   .m-filters {
     display: flex; gap: 4px;
     overflow-x: auto;
-    padding-bottom: 2px;
+    padding: 8px 12px 8px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
     -webkit-overflow-scrolling: touch;
   }
   .m-filters::-webkit-scrollbar { display: none; }
   .m-filter {
     flex: none;
-    padding: 5px 11px;
+    padding: 6px 12px;
     border: 1px solid var(--border);
     background: transparent;
     color: #888;
-    font-size: 10.5px; font-weight: 800;
+    font-size: 11px; font-weight: 800;
     letter-spacing: 0.5px;
     border-radius: 6px;
     cursor: pointer;
@@ -316,18 +326,19 @@
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 4px 12px 20px;
+    padding: 6px 12px 20px;
+    min-height: 0;
   }
   .m-list::-webkit-scrollbar { width: 4px; }
   .m-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
 
   .m-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 10px;
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 11px;
     border-radius: 10px;
     border: 1px solid transparent;
     background: #0e0e0e;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
     cursor: pointer;
     transition: all .15s;
   }
@@ -345,31 +356,31 @@
     cursor: not-allowed;
   }
   .m-item-thumb {
-    width: 40px; height: 40px; flex: none;
-    border-radius: 7px;
+    width: 44px; height: 44px; flex: none;
+    border-radius: 8px;
     background: #000;
     border: 1px solid #2a2a2a;
     display: grid; place-items: center;
     overflow: hidden;
-    font-size: 14px; color: #555;
+    font-size: 15px; color: #555;
   }
   .m-item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .m-item-body { flex: 1; min-width: 0; }
   .m-item-name {
-    font-size: 13px; font-weight: 700;
+    font-size: 13.5px; font-weight: 700;
     color: #ddd; line-height: 1.3;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .m-item.selected .m-item-name,
   .m-item.in-current .m-item-name { color: var(--neon); }
   .m-item-tags {
-    display: flex; gap: 3px; margin-top: 3px;
+    display: flex; gap: 4px; margin-top: 4px;
     align-items: center;
     flex-wrap: wrap;
   }
   .m-tag {
-    font-size: 8.5px; font-weight: 800;
-    padding: 1px 5px;
+    font-size: 9px; font-weight: 800;
+    padding: 2px 6px;
     border-radius: 3px;
     border: 1px solid #333;
     color: #888;
@@ -387,22 +398,22 @@
 
   .m-item-badge {
     flex: none;
-    min-width: 22px; height: 22px;
-    padding: 0 6px;
+    min-width: 24px; height: 24px;
+    padding: 0 7px;
     background: var(--neon);
     color: #000;
-    font-size: 10px; font-weight: 900;
+    font-size: 11px; font-weight: 900;
     border-radius: 5px;
     display: grid; place-items: center;
   }
   .m-item-state {
     flex: none;
-    width: 22px; height: 22px;
+    width: 24px; height: 24px;
     border-radius: 50%;
     border: 1.5px solid #333;
     background: #000;
     display: grid; place-items: center;
-    font-size: 11px; font-weight: 800;
+    font-size: 12px; font-weight: 800;
     color: transparent;
   }
   .m-item.in-current .m-item-state {
@@ -414,9 +425,119 @@
     padding: 40px 20px;
     text-align: center;
     color: #555;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.7;
   }
+
+  /* ============== 成员标签页内容 ============== */
+  .m-members-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* 当前曲目条 —— 只在成员标签显示，精简版 */
+  .m-current-hero {
+    flex: none;
+    padding: 12px 14px;
+    background: linear-gradient(180deg, #121212, #0a0a0a);
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .m-current-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .m-current-label {
+    font-size: 10px; font-weight: 800;
+    color: var(--neon);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .m-current-count {
+    font-size: 11px; font-weight: 800;
+    color: #888;
+    background: #1a1a1a;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .m-current-count.reached {
+    color: #ff6666;
+    background: rgba(255, 68, 68, 0.15);
+  }
+  .m-current-title {
+    font-size: 17px; font-weight: 900;
+    color: #fff;
+    line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .m-current-none {
+    text-align: center;
+    padding: 20px 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .m-current-none strong { color: var(--neon); }
+  .m-current-none-btn {
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: var(--neon);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* 已选成员横向快捷显示 */
+  .m-selected-strip {
+    flex: none;
+    display: flex; gap: 5px;
+    padding: 10px 14px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 56px;
+    align-items: center;
+  }
+  .m-selected-strip::-webkit-scrollbar { display: none; }
+  .m-selected-empty {
+    font-size: 11.5px; color: #555;
+    padding: 6px 0;
+  }
+  .m-selected-chip {
+    position: relative;
+    flex: none;
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 10px 4px 4px;
+    background: rgba(204, 255, 0, 0.08);
+    border: 1px solid var(--neon-dim);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--neon);
+    cursor: pointer;
+  }
+  .m-selected-chip .chip-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #222; overflow: hidden;
+    display: grid; place-items: center;
+    font-size: 10px; font-weight: 800;
+    border: 1px solid #333;
+  }
+  .m-selected-chip .chip-avatar img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .m-selected-chip:active { background: rgba(204, 255, 0, 0.15); }
 
   /* ==================================================
      桌面端
@@ -723,8 +844,14 @@
     line-height: 1.3;
     word-break: break-word;
   }
-  .d-card-close {
-    width: 26px; height: 26px; flex: none;
+
+  .d-card-actions {
+    display: flex;
+    gap: 4px;
+    flex: none;
+  }
+  .d-card-btn {
+    width: 28px; height: 28px;
     border: 1px solid #333;
     background: #000;
     color: #888;
@@ -734,8 +861,18 @@
     padding: 0;
     font-family: inherit;
     font-size: 12px;
+    font-weight: 800;
+    transition: all .15s;
   }
-  .d-card-close:hover { border-color: #ff4444; color: #ff4444; background: #110000; }
+  .d-card-btn:hover {
+    border-color: var(--neon);
+    color: var(--neon);
+  }
+  .d-card-btn.danger:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: #110000;
+  }
 
   .d-member-grid {
     display: grid;
@@ -824,28 +961,42 @@
     <button class="m-icon-btn primary" id="mBtnExport" title="导出图片">⬇</button>
   </header>
 
-  <div class="m-current-bar">
-    <span class="m-current-label">当前曲目</span>
-    <span class="m-current-name empty" id="mCurrentName">未选择</span>
-    <span class="m-current-limit empty" id="mCurrentLimit"></span>
-  </div>
-
-  <div class="m-preview" id="mPreview"></div>
-
+  <!-- 标签栏 -->
   <div class="m-tabs">
     <button class="m-tab active" data-tab="songs" id="mTabSongs">① 选曲目</button>
-    <button class="m-tab" data-tab="members" id="mTabMembers">② 选成员</button>
+    <button class="m-tab" data-tab="members" id="mTabMembers">② 选成员<span class="m-tab-badge" id="mTabBadge">0</span></button>
   </div>
 
-  <div class="m-controls">
-    <div class="m-search-wrap">
-      <span class="m-search-icon">🔍</span>
-      <input type="search" class="m-search" id="mSearch" placeholder="搜索曲目…">
+  <!-- ===== 曲目视图 ===== -->
+  <div class="m-songs-view" id="mSongsView">
+    <div class="m-preview" id="mPreview"></div>
+
+    <div class="m-search-bar">
+      <div class="m-search-wrap">
+        <span class="m-search-icon">🔍</span>
+        <input type="search" class="m-search" id="mSongSearch" placeholder="搜索曲目…">
+      </div>
     </div>
-    <div class="m-filters" id="mFilters" style="display:none"></div>
+
+    <div class="m-list" id="mSongList"></div>
   </div>
 
-  <div class="m-list" id="mList"></div>
+  <!-- ===== 成员视图 ===== -->
+  <div class="m-members-view" id="mMembersView" style="display:none">
+    <div class="m-current-hero" id="mCurrentHero"></div>
+    <div class="m-selected-strip" id="mSelectedStrip"></div>
+
+    <div class="m-filters" id="mFilters"></div>
+
+    <div class="m-search-bar">
+      <div class="m-search-wrap">
+        <span class="m-search-icon">🔍</span>
+        <input type="search" class="m-search" id="mMemberSearch" placeholder="搜索成员…">
+      </div>
+    </div>
+
+    <div class="m-list" id="mMemberList"></div>
+  </div>
 
 </div>
 
@@ -914,7 +1065,7 @@ const CONFIG = {
   subtitle: '～10TH ANNIVERSARY～',
   team: 'NCT',
   date: '2026',
-  url: 'https://你的网址.github.io'
+  url: 'https://glacier126.github.io/NCTNATION'
 };
 
 const SONG_POOL = [
@@ -1055,7 +1206,7 @@ const DEFAULT_MEMBER_IMAGES = {
    ② 状态与工具
    ============================================================ */
 const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif';
-const STORAGE_KEY = 'nct-setlist-picker-v9';
+const STORAGE_KEY = 'nct-setlist-picker-v11';
 
 const state = { setlist: [], activeIndex: -1, songImages: {}, memberImages: {} };
 let currentTeam = 'all';
@@ -1187,16 +1338,8 @@ function selectSong(index){
     state.activeIndex = state.setlist.length - 1;
   }
   save();
-  /* 移动端选完歌自动切到成员池 */
   if (isMobile()) {
-    mobileTab = 'members';
-    const tabS = $('mTabSongs'), tabM = $('mTabMembers');
-    if (tabS && tabM) {
-      tabS.classList.remove('active');
-      tabM.classList.add('active');
-    }
-    const s = $('mSearch');
-    if (s) s.value = '';
+    switchMobileTab('members');
   }
   renderAll();
 }
@@ -1220,9 +1363,37 @@ function toggleMember(index){
 }
 
 function removeSong(si){
+  if (si < 0 || si >= state.setlist.length) return;
+  const song = SONG_POOL[state.setlist[si].song];
+  if (!confirm('确定要移除「' + (song ? song.title : '') + '」吗？')) return;
   state.setlist.splice(si, 1);
-  if (state.activeIndex >= state.setlist.length) state.activeIndex = state.setlist.length - 1;
-  else if (si < state.activeIndex) state.activeIndex--;
+  if (!state.setlist.length) {
+    state.activeIndex = -1;
+  } else if (state.activeIndex >= state.setlist.length) {
+    state.activeIndex = state.setlist.length - 1;
+  } else if (si < state.activeIndex) {
+    state.activeIndex--;
+  }
+  save(); renderAll();
+}
+
+function moveSongUp(si){
+  if (si <= 0) return;
+  const t = state.setlist[si - 1];
+  state.setlist[si - 1] = state.setlist[si];
+  state.setlist[si] = t;
+  if (state.activeIndex === si) state.activeIndex = si - 1;
+  else if (state.activeIndex === si - 1) state.activeIndex = si;
+  save(); renderAll();
+}
+
+function moveSongDown(si){
+  if (si >= state.setlist.length - 1) return;
+  const t = state.setlist[si + 1];
+  state.setlist[si + 1] = state.setlist[si];
+  state.setlist[si] = t;
+  if (state.activeIndex === si) state.activeIndex = si + 1;
+  else if (state.activeIndex === si + 1) state.activeIndex = si;
   save(); renderAll();
 }
 
@@ -1246,41 +1417,49 @@ function clearAll(){
 /* ============================================================
    ④ 移动端渲染
    ============================================================ */
+function switchMobileTab(tab){
+  mobileTab = tab;
+  const tabS = $('mTabSongs'), tabM = $('mTabMembers');
+  const viewS = $('mSongsView'), viewM = $('mMembersView');
+  if (!tabS || !tabM || !viewS || !viewM) return;
+
+  if (tab === 'songs') {
+    tabS.classList.add('active');
+    tabM.classList.remove('active');
+    viewS.style.display = 'flex';
+    viewM.style.display = 'none';
+  } else {
+    tabM.classList.add('active');
+    tabS.classList.remove('active');
+    viewS.style.display = 'none';
+    viewM.style.display = 'flex';
+  }
+}
+
 function renderMobile(){
   if (!isMobile()) return;
-  renderMobileCurrentBar();
-  renderMobilePreview();
-  renderMobileControls();
-  renderMobileList();
-}
-
-function renderMobileCurrentBar(){
-  const item = state.setlist[state.activeIndex];
-  const nameEl = $('mCurrentName');
-  const limitEl = $('mCurrentLimit');
-  if (!item) {
-    nameEl.textContent = '未选择';
-    nameEl.className = 'm-current-name empty';
-    limitEl.textContent = '';
-    limitEl.className = 'm-current-limit empty';
-    return;
-  }
-  const song = SONG_POOL[item.song];
-  nameEl.className = 'm-current-name';
-  if (song && song.limit) {
-    nameEl.textContent = song.title;
-    limitEl.textContent = item.members.length + ' / ' + song.limit;
-    limitEl.className = 'm-current-limit' +
-      (item.members.length >= song.limit ? ' reached' : '');
+  renderMobileTabBadge();
+  if (mobileTab === 'songs') {
+    renderMobilePreview();
+    renderMobileSongList();
   } else {
-    nameEl.textContent = song ? song.title : '';
-    limitEl.textContent = item.members.length + ' 人';
-    limitEl.className = 'm-current-limit';
+    renderMobileCurrentHero();
+    renderMobileSelectedStrip();
+    renderMobileFilters();
+    renderMobileMemberList();
   }
 }
 
+function renderMobileTabBadge(){
+  const badge = $('mTabBadge');
+  if (!badge) return;
+  badge.textContent = String(state.setlist.length);
+}
+
+/* ---- 曲目视图 ---- */
 function renderMobilePreview(){
   const mPreview = $('mPreview');
+  if (!mPreview) return;
   if (!state.setlist.length) {
     mPreview.innerHTML =
       '<div class="m-preview-empty">' +
@@ -1324,16 +1503,26 @@ function renderMobilePreview(){
       ? item.members.length + '/' + limit
       : String(item.members.length);
 
+    const upDisabled = si === 0 ? ' style="opacity:.3"' : '';
+    const downDisabled = si === state.setlist.length - 1 ? ' style="opacity:.3"' : '';
+
     html +=
       '<div class="m-pv-song' + (active ? ' active' : '') + '" data-si="' + si + '">' +
-        '<div class="m-pv-thumb">' +
-          (songImg ? '<img src="' + songImg + '" alt="" loading="lazy">' : '♪') +
-        '</div>' +
-        '<div class="m-pv-body">' +
-          '<div class="m-pv-name">' + pad2(si+1) + '. ' + esc(song.title) + '</div>' +
-          '<div class="m-pv-members">' + avatars + '</div>' +
+        '<div class="m-pv-main" data-act="select">' +
+          '<div class="m-pv-thumb">' +
+            (songImg ? '<img src="' + songImg + '" alt="" loading="lazy">' : '♪') +
+          '</div>' +
+          '<div class="m-pv-body">' +
+            '<div class="m-pv-name">' + pad2(si+1) + '. ' + esc(song.title) + '</div>' +
+            '<div class="m-pv-members">' + avatars + '</div>' +
+          '</div>' +
         '</div>' +
         '<div class="' + countClass + '">' + countText + '</div>' +
+        '<div class="m-pv-actions">' +
+          '<button class="m-pv-btn" data-act="up" title="上移"' + upDisabled + '>↑</button>' +
+          '<button class="m-pv-btn" data-act="down" title="下移"' + downDisabled + '>↓</button>' +
+          '<button class="m-pv-btn danger" data-act="del" title="删除">✕</button>' +
+        '</div>' +
       '</div>';
   });
   mPreview.innerHTML = html;
@@ -1350,169 +1539,253 @@ function renderMobilePreview(){
   }
 }
 
-function renderMobileControls(){
-  const mSearch = $('mSearch');
-  const mFilters = $('mFilters');
-  mSearch.placeholder = mobileTab === 'songs' ? '搜索曲目…' : '搜索成员…';
+function renderMobileSongList(){
+  const mSongList = $('mSongList');
+  const mSongSearch = $('mSongSearch');
+  if (!mSongList || !mSongSearch) return;
+  const q = mSongSearch.value.trim().toLowerCase();
+  const frag = document.createDocumentFragment();
+  let shown = 0;
 
-  if (mobileTab === 'members') {
-    mFilters.style.display = 'flex';
-    mFilters.innerHTML = TEAMS.map(t =>
-      '<button class="m-filter' + (currentTeam === t.key ? ' active' : '') +
-      '" data-team="' + t.key + '">' + esc(t.label) + '</button>'
-    ).join('');
-  } else {
-    mFilters.style.display = 'none';
-  }
+  SONG_POOL.forEach((song, i) => {
+    if (q && !song.title.toLowerCase().includes(q)) return;
+    shown++;
+
+    const listPos = state.setlist.findIndex(it => it.song === i);
+    const selected = listPos >= 0;
+    const active = selected && listPos === state.activeIndex;
+    const img = state.songImages[i];
+
+    let tags = '';
+    if (song.limit) {
+      tags += '<span class="m-tag limit-tag">限' + song.limit + '人</span>';
+    }
+
+    const div = document.createElement('div');
+    div.className = 'm-item' + (selected ? ' selected' : '') + (active ? ' in-current' : '');
+    div.dataset.songIndex = i;
+    div.innerHTML =
+      '<div class="m-item-thumb">' +
+        (img ? '<img src="' + img + '" alt="" loading="lazy">' : '♪') +
+      '</div>' +
+      '<div class="m-item-body">' +
+        '<div class="m-item-name">' + esc(song.title) + '</div>' +
+        (tags ? '<div class="m-item-tags">' + tags + '</div>' : '') +
+      '</div>' +
+      (selected
+        ? '<div class="m-item-badge">' + pad2(listPos+1) + '</div>'
+        : '<div class="m-item-state"></div>');
+    frag.appendChild(div);
+  });
+
+  mSongList.innerHTML = '';
+  if (!shown) mSongList.innerHTML = '<div class="m-empty">没有匹配的曲目</div>';
+  else mSongList.appendChild(frag);
 }
 
-function renderMobileList(){
-  const mList = $('mList');
-  const mSearch = $('mSearch');
-
-  if (mobileTab === 'songs') {
-    const q = mSearch.value.trim().toLowerCase();
-    const frag = document.createDocumentFragment();
-    let shown = 0;
-
-    SONG_POOL.forEach((song, i) => {
-      if (q && !song.title.toLowerCase().includes(q)) return;
-      shown++;
-
-      const listPos = state.setlist.findIndex(it => it.song === i);
-      const selected = listPos >= 0;
-      const active = selected && listPos === state.activeIndex;
-      const img = state.songImages[i];
-
-      let tags = '';
-      if (song.limit) {
-        tags += '<span class="m-tag limit-tag">限' + song.limit + '人</span>';
-      }
-
-      const div = document.createElement('div');
-      div.className = 'm-item' + (selected ? ' selected' : '') + (active ? ' in-current' : '');
-      div.dataset.songIndex = i;
-      div.innerHTML =
-        '<div class="m-item-thumb">' +
-          (img ? '<img src="' + img + '" alt="" loading="lazy">' : '♪') +
-        '</div>' +
-        '<div class="m-item-body">' +
-          '<div class="m-item-name">' + esc(song.title) + '</div>' +
-          (tags ? '<div class="m-item-tags">' + tags + '</div>' : '') +
-        '</div>' +
-        (selected
-          ? '<div class="m-item-badge">' + pad2(listPos+1) + '</div>'
-          : '<div class="m-item-state"></div>');
-      frag.appendChild(div);
-    });
-
-    mList.innerHTML = '';
-    if (!shown) mList.innerHTML = '<div class="m-empty">没有匹配的曲目</div>';
-    else mList.appendChild(frag);
-
-  } else {
-    const q = mSearch.value.trim().toLowerCase();
-    const frag = document.createDocumentFragment();
-    let shown = 0;
-    const target = state.setlist[state.activeIndex];
-    const inCurrent = target ? target.members : [];
-    const limit = target ? getSongLimit(target.song) : Infinity;
-    const isFull = target && target.members.length >= limit;
-
-    MEMBER_POOL.forEach((member, i) => {
-      if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
-      if (q && !member.name.toLowerCase().includes(q)) return;
-      shown++;
-
-      const img = state.memberImages[i];
-      const isIn = inCurrent.includes(i);
-      const disabled = isFull && !isIn;
-
-      const teamTags = member.teams.map(t => {
-        const info = TEAMS.find(x => x.key === t);
-        return '<span class="m-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
-      }).join('');
-
-      const div = document.createElement('div');
-      div.className = 'm-item' + (isIn ? ' in-current' : '') + (disabled ? ' disabled' : '');
-      div.dataset.memberIndex = i;
-      div.innerHTML =
-        '<div class="m-item-thumb">' +
-          (img ? '<img src="' + img + '" alt="" loading="lazy">' : esc(member.name.charAt(0))) +
-        '</div>' +
-        '<div class="m-item-body">' +
-          '<div class="m-item-name">' + esc(member.name) + '</div>' +
-          '<div class="m-item-tags">' + teamTags + '</div>' +
-        '</div>' +
-        '<div class="m-item-state">' + (isIn ? '✓' : '') + '</div>';
-      frag.appendChild(div);
-    });
-
-    mList.innerHTML = '';
-    if (!shown) mList.innerHTML = '<div class="m-empty">没有匹配的成员</div>';
-    else mList.appendChild(frag);
+/* ---- 成员视图 ---- */
+function renderMobileCurrentHero(){
+  const hero = $('mCurrentHero');
+  if (!hero) return;
+  const item = state.setlist[state.activeIndex];
+  if (!item) {
+    hero.innerHTML =
+      '<div class="m-current-none">' +
+        '还没有选择曲目<br>' +
+        '请先到 <strong>① 选曲目</strong> 添加' +
+        '<br><button class="m-current-none-btn" data-act="goto-songs">去选曲目</button>' +
+      '</div>';
+    return;
   }
+  const song = SONG_POOL[item.song];
+  const limit = song && song.limit;
+  const countText = limit
+    ? item.members.length + ' / ' + limit
+    : item.members.length + ' 人';
+  const reached = limit && item.members.length >= limit;
+
+  hero.innerHTML =
+    '<div class="m-current-head">' +
+      '<div class="m-current-label">CURRENT SONG</div>' +
+      '<div class="m-current-count' + (reached ? ' reached' : '') + '">' + countText + '</div>' +
+    '</div>' +
+    '<div class="m-current-title">' + esc(song ? song.title : '') + '</div>';
+}
+
+function renderMobileSelectedStrip(){
+  const strip = $('mSelectedStrip');
+  if (!strip) return;
+  const item = state.setlist[state.activeIndex];
+  if (!item || !item.members.length) {
+    strip.innerHTML = '<div class="m-selected-empty">点击下方成员加入本曲</div>';
+    return;
+  }
+  let html = '';
+  item.members.forEach((mi, k) => {
+    const m = MEMBER_POOL[mi];
+    const name = m ? m.name : '';
+    const mImg = state.memberImages[mi];
+    html +=
+      '<div class="m-selected-chip" data-act="remove-member" data-pos="' + k + '">' +
+        '<span class="chip-avatar">' +
+          (mImg ? '<img src="' + mImg + '" alt="">' : esc((name||'?').charAt(0))) +
+        '</span>' +
+        '<span>' + esc(name.split(' ')[0] || name) + '</span>' +
+      '</div>';
+  });
+  strip.innerHTML = html;
+}
+
+function renderMobileFilters(){
+  const mFilters = $('mFilters');
+  if (!mFilters) return;
+  mFilters.innerHTML = TEAMS.map(t =>
+    '<button class="m-filter' + (currentTeam === t.key ? ' active' : '') +
+    '" data-team="' + t.key + '">' + esc(t.label) + '</button>'
+  ).join('');
+}
+
+function renderMobileMemberList(){
+  const mMemberList = $('mMemberList');
+  const mMemberSearch = $('mMemberSearch');
+  if (!mMemberList || !mMemberSearch) return;
+
+  const q = mMemberSearch.value.trim().toLowerCase();
+  const frag = document.createDocumentFragment();
+  let shown = 0;
+  const target = state.setlist[state.activeIndex];
+  const inCurrent = target ? target.members : [];
+  const limit = target ? getSongLimit(target.song) : Infinity;
+  const isFull = target && target.members.length >= limit;
+
+  MEMBER_POOL.forEach((member, i) => {
+    if (currentTeam !== 'all' && !member.teams.includes(currentTeam)) return;
+    if (q && !member.name.toLowerCase().includes(q)) return;
+    shown++;
+
+    const img = state.memberImages[i];
+    const isIn = inCurrent.includes(i);
+    const disabled = isFull && !isIn;
+
+    const teamTags = member.teams.map(t => {
+      const info = TEAMS.find(x => x.key === t);
+      return '<span class="m-tag t-' + t + '">' + esc(info ? info.short : t) + '</span>';
+    }).join('');
+
+    const div = document.createElement('div');
+    div.className = 'm-item' + (isIn ? ' in-current' : '') + (disabled ? ' disabled' : '');
+    div.dataset.memberIndex = i;
+    div.innerHTML =
+      '<div class="m-item-thumb">' +
+        (img ? '<img src="' + img + '" alt="" loading="lazy">' : esc(member.name.charAt(0))) +
+      '</div>' +
+      '<div class="m-item-body">' +
+        '<div class="m-item-name">' + esc(member.name) + '</div>' +
+        '<div class="m-item-tags">' + teamTags + '</div>' +
+      '</div>' +
+      '<div class="m-item-state">' + (isIn ? '✓' : '') + '</div>';
+    frag.appendChild(div);
+  });
+
+  mMemberList.innerHTML = '';
+  if (!shown) mMemberList.innerHTML = '<div class="m-empty">没有匹配的成员</div>';
+  else mMemberList.appendChild(frag);
 }
 
 /* --- 移动端事件 --- */
 function bindMobileEvents(){
-  const mPreview = $('mPreview');
-  const mList = $('mList');
-  const mSearch = $('mSearch');
-  const mFilters = $('mFilters');
   const mTabSongs = $('mTabSongs');
   const mTabMembers = $('mTabMembers');
+  const mPreview = $('mPreview');
+  const mSongList = $('mSongList');
+  const mSongSearch = $('mSongSearch');
+  const mMemberList = $('mMemberList');
+  const mMemberSearch = $('mMemberSearch');
+  const mFilters = $('mFilters');
+  const mCurrentHero = $('mCurrentHero');
+  const mSelectedStrip = $('mSelectedStrip');
 
-  mPreview.addEventListener('click', e => {
-    const el = e.target.closest('.m-pv-song');
-    if (!el) return;
-    state.activeIndex = Number(el.dataset.si);
-    save();
-    /* 切换到成员池方便继续选 */
-    mobileTab = 'members';
-    mTabSongs.classList.remove('active');
-    mTabMembers.classList.add('active');
-    mSearch.value = '';
+  mTabSongs.addEventListener('click', () => {
+    switchMobileTab('songs');
+    renderAll();
+  });
+  mTabMembers.addEventListener('click', () => {
+    switchMobileTab('members');
     renderAll();
   });
 
-  mList.addEventListener('click', e => {
+  /* 预览区操作 */
+  mPreview.addEventListener('click', e => {
+    const row = e.target.closest('.m-pv-song');
+    if (!row) return;
+    const si = Number(row.dataset.si);
+    const actBtn = e.target.closest('[data-act]');
+    if (actBtn) {
+      const a = actBtn.dataset.act;
+      if (a === 'up') { moveSongUp(si); return; }
+      if (a === 'down') { moveSongDown(si); return; }
+      if (a === 'del') { removeSong(si); return; }
+      if (a === 'select') {
+        state.activeIndex = si;
+        save();
+        switchMobileTab('members');
+        renderAll();
+        return;
+      }
+    }
+    /* 点其他区域也算选中 */
+    state.activeIndex = si;
+    save();
+    switchMobileTab('members');
+    renderAll();
+  });
+
+  /* 曲目列表点击 */
+  mSongList.addEventListener('click', e => {
+    const item = e.target.closest('.m-item');
+    if (!item) return;
+    selectSong(Number(item.dataset.songIndex));
+  });
+
+  mSongSearch.addEventListener('input', renderMobileSongList);
+
+  /* 成员列表点击 */
+  mMemberList.addEventListener('click', e => {
     const item = e.target.closest('.m-item');
     if (!item) return;
     if (item.classList.contains('disabled')) return;
-    if (item.dataset.songIndex !== undefined) {
-      selectSong(Number(item.dataset.songIndex));
-    } else if (item.dataset.memberIndex !== undefined) {
-      toggleMember(Number(item.dataset.memberIndex));
-    }
+    toggleMember(Number(item.dataset.memberIndex));
   });
 
-  mSearch.addEventListener('input', renderMobileList);
+  mMemberSearch.addEventListener('input', renderMobileMemberList);
 
+  /* 队伍筛选 */
   mFilters.addEventListener('click', e => {
     const btn = e.target.closest('.m-filter');
     if (!btn) return;
     currentTeam = btn.dataset.team;
-    renderMobileControls();
-    renderMobileList();
+    renderMobileFilters();
+    renderMobileMemberList();
   });
 
-  mTabSongs.addEventListener('click', () => {
-    mobileTab = 'songs';
-    mTabSongs.classList.add('active');
-    mTabMembers.classList.remove('active');
-    mSearch.value = '';
-    renderMobileControls();
-    renderMobileList();
+  /* 当前曲目条上的"去选曲目" */
+  mCurrentHero.addEventListener('click', e => {
+    if (e.target.dataset.act === 'goto-songs') {
+      switchMobileTab('songs');
+      renderAll();
+    }
   });
 
-  mTabMembers.addEventListener('click', () => {
-    mobileTab = 'members';
-    mTabMembers.classList.add('active');
-    mTabSongs.classList.remove('active');
-    mSearch.value = '';
-    renderMobileControls();
-    renderMobileList();
+  /* 已选成员快捷删除 */
+  mSelectedStrip.addEventListener('click', e => {
+    const chip = e.target.closest('.m-selected-chip');
+    if (!chip) return;
+    const pos = Number(chip.dataset.pos);
+    const item = state.setlist[state.activeIndex];
+    if (item) {
+      item.members.splice(pos, 1);
+      save(); renderAll();
+    }
   });
 
   $('mBtnClear').addEventListener('click', clearAll);
@@ -1673,6 +1946,9 @@ function renderDesktopPreview(){
     const reached = limit && item.members.length >= limit;
     const idxText = pad2(si+1) + ' / ' + item.members.length + (limit ? '/' + limit : '') + ' 人';
 
+    const upDisabled = si === 0;
+    const downDisabled = si === state.setlist.length - 1;
+
     let html =
       '<div class="d-card-head">' +
         '<div class="d-card-thumb" data-act="songimg">' +
@@ -1682,7 +1958,11 @@ function renderDesktopPreview(){
           '<div class="d-card-idx' + (reached ? ' reached' : '') + '">' + idxText + '</div>' +
           '<div class="d-card-name">' + esc(song.title) + '</div>' +
         '</div>' +
-        '<button class="d-card-close" data-act="removesong">✕</button>' +
+        '<div class="d-card-actions">' +
+          '<button class="d-card-btn" data-act="up"' + (upDisabled ? ' disabled style="opacity:.3;cursor:not-allowed"' : '') + ' title="上移">↑</button>' +
+          '<button class="d-card-btn" data-act="down"' + (downDisabled ? ' disabled style="opacity:.3;cursor:not-allowed"' : '') + ' title="下移">↓</button>' +
+          '<button class="d-card-btn danger" data-act="removesong" title="删除">✕</button>' +
+        '</div>' +
       '</div>';
 
     if (item.members.length) {
@@ -1746,6 +2026,8 @@ function bindDesktopEvents(){
     const act = e.target.closest('[data-act]');
     if (act) {
       const a = act.dataset.act;
+      if (a === 'up') { e.stopPropagation(); moveSongUp(si); return; }
+      if (a === 'down') { e.stopPropagation(); moveSongDown(si); return; }
       if (a === 'removesong') { e.stopPropagation(); removeSong(si); return; }
       if (a === 'removemember') {
         e.stopPropagation();
@@ -2145,10 +2427,13 @@ function loadDefaultImages(){
     bindMobileEvents();
     bindDesktopEvents();
 
+    /* 移动端默认标签：有已选曲目则去成员，否则留在曲目 */
     if (isMobile()) {
-      const tabS = $('mTabSongs'), tabM = $('mTabMembers');
-      tabS.classList.add('active');
-      tabM.classList.remove('active');
+      if (state.setlist.length && state.activeIndex >= 0) {
+        switchMobileTab('members');
+      } else {
+        switchMobileTab('songs');
+      }
     }
 
     renderAll();
@@ -2160,7 +2445,13 @@ function loadDefaultImages(){
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(renderAll, 150);
+  resizeTimer = setTimeout(() => {
+    /* 切换设备时确保当前视图正确 */
+    if (isMobile()) {
+      switchMobileTab(mobileTab);
+    }
+    renderAll();
+  }, 150);
 });
 </script>
 </body>
